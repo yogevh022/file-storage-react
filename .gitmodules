@@ -1,0 +1,3 @@
+[submodule "winrates-frontend"]
+	path = winrates-frontend
+	url = https://github.com/yogevh022/file-storage-react
