@@ -1,2 +1,23 @@
 /stored_files/*
-/winrates-frontend/build/
+
+# dependencies
+/winrates-frontend/node_modules
+/winrates-frontend/.pnp
+/winrates-frontend.pnp.js
+
+# testing
+/winrates-frontend/coverage
+
+# production
+/winrates-frontend/build
+
+# misc
+/winrates-frontend.DS_Store
+/winrates-frontend.env.local
+/winrates-frontend.env.development.local
+/winrates-frontend.env.test.local
+/winrates-frontend.env.production.local
+
+/winrates-frontendnpm-debug.log*
+/winrates-frontendyarn-debug.log*
+/winrates-frontendyarn-error.log*
