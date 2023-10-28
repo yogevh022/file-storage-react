@@ -12,12 +12,12 @@
 /winrates-frontend/build
 
 # misc
-/winrates-frontend.DS_Store
-/winrates-frontend.env.local
-/winrates-frontend.env.development.local
-/winrates-frontend.env.test.local
-/winrates-frontend.env.production.local
+/winrates-frontend/.DS_Store
+/winrates-frontend/.env.local
+/winrates-frontend/.env.development.local
+/winrates-frontend/.env.test.local
+/winrates-frontend/.env.production.local
 
-/winrates-frontendnpm-debug.log*
-/winrates-frontendyarn-debug.log*
-/winrates-frontendyarn-error.log*
+/winrates-frontend/npm-debug.log*
+/winrates-frontend/yarn-debug.log*
+/winrates-frontend/yarn-error.log*
