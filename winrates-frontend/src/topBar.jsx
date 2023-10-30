@@ -1,8 +1,10 @@
 import React from "react";
 
-function TopBar() {
+function TopBar(props) {
     return (
-        <div className="topBar"></div>
+        <div className="topBar">
+            <div className="selectedFileCollection">{props.selectedFileCollection}</div>
+        </div>
     )
 }
 

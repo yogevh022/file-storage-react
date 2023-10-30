@@ -9,8 +9,11 @@
   --uifontsize: 22px;
   --fileimgsize: 40px;
   --sfsizewidth: 60px;
+  --sfbtnwidth: 30px;
 
   --miconwidth: 27px;
+
+  --btnanimlen: .4s;
 
   --dk0: #323957;
   --dk1: #1B1F32;
@@ -18,19 +21,6 @@
   --dk25: #4A4E7C;
   --dk3: #A2C1D1;
   --dk4: #E6E6FA;
-
-  /*--dk0: #0a0d22;
-  --dk1: #0f1425;
-  --dk2: #374255;
-  --dk3: #ACBBC6;
-  --dk4: #ECECEC;
-*/
-
-  /* lt 2-5 not in use */
-  --lt_2: #FE676E;
-  --lt_3: #ffab3d;
-  --lt_4: #787FF6;
-  --lt_5: #7BD5F5;
 
   --lt_d: #ec4c37;
   --lt_e: #de4c86;
@@ -59,17 +49,32 @@
 @media screen and (max-width:768px) {
   :root {
     --sfcouterpad: 10px;  /* this is the mobile size of this var */
+    --btnanimlen: .2s;
   }
 
   .expireSelect {
     font-size: 14px !important;  /* smaller on mobile ( on desktop its var(--uifontsize) )*/
   }
 
-  .shareBtnContainer:active {
+  /* .storedFileContainer:active {
+    background-color: var(--dk25);
+  } */
+
+  .sfBtnContainer:active {
     background-color: var(--dk1);
   }
-  .shareBtnContainer:active .shareBtn {
+  .sfBtnContainer:active .sfBtn {
     filter: brightness(1);
+  }
+
+  .uploadButton:not(.uploadButtonOpen):active {
+    background-position: 100% 0;
+    box-shadow: 0 0 5px 1px var(--lt_d);
+  }
+
+  .submitButton:active {
+    background-position: 100% 0;
+    box-shadow: 0 0 5px 1px var(--lt_i);
   }
 }
 
@@ -78,10 +83,10 @@
     background-color: var(--dk25);
   }
 
-  .shareBtnContainer:hover {
+  .sfBtnContainer:hover {
     background-color: var(--dk1);
   }
-  .shareBtnContainer:hover .shareBtn {
+  .sfBtnContainer:hover .sfBtn {
     filter: brightness(1);
   }
 
@@ -127,6 +132,10 @@ img {
   -webkit-user-drag: none;
 }
 
+button {
+  -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
+}
+
 .ds {
   position: fixed;
   width: 100%;
@@ -165,9 +174,25 @@ img {
 }
 
 .topBar {
-  height: var(--barheight);
+  z-index: 1000;
+
+  height: 70px;
   width: 100%;
   background-color: var(--dk2);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 0 10px 2px rgba(27, 31, 50, 1);
+}
+
+.selectedFileCollection {
+  font-size: 20px;
+  font-weight: 600;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  color: var(--dk4);
 }
 
 .bottomBar {
@@ -177,7 +202,7 @@ img {
   width: 100%;
 
   /* the rgb value is --dk1 */
-  background: linear-gradient(to top, rgba(15, 20, 37, 1), rgba(15, 20, 37, 0));
+  background: linear-gradient(to top, rgba(27, 31, 50, 1), rgba(27, 31, 50, 0));
 
   z-index: 2000;
 
@@ -352,6 +377,7 @@ img {
   cursor: pointer;
 
   text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
+  user-select: none;
 
   border: none;
   color: var(--dk4);
@@ -360,7 +386,7 @@ img {
   background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
   box-shadow: 0 0 10px 2px transparent;
 
-  transition: background-position .4s ease-in-out, box-shadow .4s ease-in-out;
+  transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out;
 }
 .uploadButton > .uploadImg {
   transition: filter 0.2s;
@@ -408,7 +434,7 @@ img {
   color: var(--dk4);
   text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
 
-  transition: background-position .4s ease-in-out, box-shadow .4s ease-in-out;
+  transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out;
 
   margin-top: var(--uipad);
 }
@@ -495,7 +521,7 @@ img {
   justify-content: space-evenly;
   flex-direction: column;
 
-  width: calc(100% - calc(calc(var(--fileimgsize) + var(--sfcpad)) + var(--sfsizewidth)));
+  width: calc(100% - calc(calc(var(--fileimgsize) + var(--sfcpad)) + var(--sfsizewidth) + var(--sfsizewidth)));
   /* width: calc(100% - calc(var(--fileimgsize) + var(--sfcpad))); */
   height: 100%;
 
@@ -515,7 +541,7 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
 
-  flex: 1 auto;
+  /* flex: 1 auto; */
 }
 
 .sfSize {
@@ -542,7 +568,7 @@ img {
   text-overflow: ellipsis;
 }
 
-.shareBtnContainer {
+.sfBtnContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -556,13 +582,21 @@ img {
 
 }
 
-.shareBtn {
-  width: 30px;
-  max-height: 30px;
-  margin-left: 2px; /* micro correcting icon */
+.sfBtn {
+  width: var(--sfbtnwidth);
+  max-height: var(--sfbtnwidth);
   filter: brightness(0.7);
   transition: filter .1s;
   pointer-events: none; /* to not interfere with click event */
+}
+
+.sfDlBtn {
+  width: calc(var(--sfbtnwidth) - 5px) !important;
+  max-height: calc(var(--sfbtnwidth) - 5px) !important;
+}
+
+.sfShrBtn {
+  margin-left: 2px;
 }
 
 

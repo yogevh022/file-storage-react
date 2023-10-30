@@ -10,6 +10,7 @@ function App() {
   const [lastClipboard, setLastClipboard] = useState(null);
   const [unableClipboard, setUnableClipboard] = useState(false);
   const [isMenuActive, setIsMenuActive] = useState(false);
+  const [selectedFileCollection, setSelectedFileCollection] = useState("Public");
 
   const handlePostedDataResponse = (data) => {
     setPostData(data);
@@ -30,7 +31,7 @@ function App() {
   return (
     <div className='globalContainer'>
       <Darkscreen isActive={isMenuActive}/>
-      <TopBar/>
+      <TopBar selectedFileCollection={selectedFileCollection}/>
       <FilesContainer postDataResponse={postData} setPostDataResponse={setPostData} onCopyClipboard={handleCopyClipboard} onUnableCopyClipboard={handleUnableToCopy} />
       <BottomBar onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
     </div>

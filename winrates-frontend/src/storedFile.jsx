@@ -1,14 +1,31 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, uploaderName, title, fileData, fileSize, expirationDateTime, displayIcon}) {
     const sfcRef = useRef(null);
+    const [animClass, setAnimClass] = useState("");
+
+    const copyClipboardIcon = `${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`;
+    const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download.svg`;
+
+    const removeAnimationClassAndListener = () => {
+        setAnimClass('');
+        sfcRef.current.removeEventListener('animationend', removeAnimationClassAndListener);
+    }
 
     useEffect(() => {
         if (isNewlyCreated) {
-            sfcRef.current.classList.add('newlyCreatedAnim');
+            setAnimClass('newlyCreatedAnim');
+            sfcRef.current.addEventListener('animationend', removeAnimationClassAndListener);
         }
     }, [isNewlyCreated]);
     
+    const getFileUrl = (_fileId) => {
+        var currentUrl = window.location.href;
+        if (currentUrl.endsWith('/')) {
+            currentUrl = currentUrl.slice(0, -1);
+        }
+        return `${currentUrl}/files/${_fileId}`;
+    }
 
     const copyToClipboard = (text) => {
         if (navigator.clipboard) {
@@ -31,35 +48,36 @@ function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreate
 
     const handleClick = (e) => {
         e.preventDefault();
-        if (e.target.classList.contains('shareBtnContainer')) { // share btn clicked
-            var currentUrl = window.location.href;
-            if (currentUrl.endsWith('/')) {
-                currentUrl = currentUrl.slice(0, -1);
-            }
-            copyToClipboard(`${currentUrl}/files/${fileId}`);
+        if (e.target.classList.contains('shareBtn')) { // share btn clicked
+            copyToClipboard(getFileUrl(fileId));
             return;
         }
+        if (e.target.classList.contains('downloadBtn')) { // download btn clicked
+            var __DEBUG = true;
+            if (!__DEBUG) { window.location.href = getFileUrl(fileId); return; }
 
-        fetch(`/files/${fileId}`)
-        .then(res => res.blob())
-        .then(blob => {
-            const fileurl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = fileurl;
-            a.download = title;
-            a.style.display = 'none';
-            document.body.appendChild(a);
+            fetch(`/files/${fileId}`)
+            .then(res => res.blob())
+            .then(blob => {
+                const fileurl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = fileurl;
+                a.download = title;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+    
+                const aClickHandler = () => {
+                    a.removeEventListener('click', aClickHandler);
+                    document.body.removeChild(a);
+                    setTimeout(()=>{window.URL.revokeObjectURL(fileurl);},50);
+                };
+    
+                a.addEventListener('click', aClickHandler);
+    
+                a.click();
+            })
+        }
 
-            const aClickHandler = () => {
-                a.removeEventListener('click', aClickHandler);
-                document.body.removeChild(a);
-                setTimeout(()=>{window.URL.revokeObjectURL(fileurl);},50);
-            };
-
-            a.addEventListener('click', aClickHandler);
-
-            a.click();
-        })
     }
 
     const determineNumFixed = (num, divisor) => {
@@ -93,7 +111,7 @@ function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreate
     const {size: fileSizeNum, unit: fileSizeUnit} = getFileSizeDisplay(fileSize);
 
     return (
-        <div ref={sfcRef} className='storedFileContainer' onClick={handleClick}>
+        <div ref={sfcRef} className={`storedFileContainer ${animClass}`} onClick={handleClick}>
             <img className='fileImg' src={displayIcon} alt="no img"/>
             <div className='storedFileInfoContainer'>
                 <div className='sfTitle'>{title}</div>
@@ -104,8 +122,11 @@ function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreate
                 {/* <span>{fileData}</span> */}
                 {/* <span>{expirationDateTime}</span> */}
             </div>
-            <div className='shareBtnContainer'>
-                <img className='shareBtn' src={`${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`} alt="no img"/>
+            <div className='downloadBtn sfBtnContainer'>
+                <img className='sfDlBtn sfBtn' src={downloadIcon} alt="V"/>
+            </div>
+            <div className='shareBtn sfBtnContainer'>
+                <img className='sfShrBtn sfBtn' src={copyClipboardIcon} alt="S"/>
             </div>
         </div>
     )

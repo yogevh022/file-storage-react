@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
 
 function FileUploadForm({ formId, onPostResponse, onFileUploadPress, onFileUploadComplete, trayOpen, setTrayOpen }) {
@@ -92,14 +92,17 @@ function FileUploadForm({ formId, onPostResponse, onFileUploadPress, onFileUploa
 
     return (
         <form id={formId} className="uploadForm" ref={formRef} onSubmit={handleSubmit} encType="multipart/form-data">
-            <button type="button" className={`uploadButton ${trayOpen ? 'uploadButtonOpen' : ''}`} onClick={handleExternalInputButtonClick}>
+            <button 
+            type="button"
+            className={`uploadButton ${trayOpen ? 'uploadButtonOpen' : ''}`}
+            onClick={handleExternalInputButtonClick}>
                 <object 
                 aria-label="+"
                 className="uploadImg"
                 data={attachFileIcon}
                 type="image/svg+xml"></object>
                 {trayOpen ? reuploadButtonLabel : uploadButtonLabel}
-                </button>
+            </button>
             { !trayOpen && fileInputIsntEmpty() && clearFileInput() }
             <input 
                 ref={fileInputRef}
