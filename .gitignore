@@ -1,23 +1,23 @@
 /stored_files/*
 
 # dependencies
-/winrates-frontend/node_modules
-/winrates-frontend/.pnp
-/winrates-frontend.pnp.js
+/fileuploadtron-frontend/node_modules
+/fileuploadtron-frontend/.pnp
+/fileuploadtron-frontend.pnp.js
 
 # testing
-/winrates-frontend/coverage
+/fileuploadtron-frontend/coverage
 
 # production
-/winrates-frontend/build
+/fileuploadtron-frontend/build
 
 # misc
-/winrates-frontend/.DS_Store
-/winrates-frontend/.env.local
-/winrates-frontend/.env.development.local
-/winrates-frontend/.env.test.local
-/winrates-frontend/.env.production.local
+/fileuploadtron-frontend/.DS_Store
+/fileuploadtron-frontend/.env.local
+/fileuploadtron-frontend/.env.development.local
+/fileuploadtron-frontend/.env.test.local
+/fileuploadtron-frontend/.env.production.local
 
-/winrates-frontend/npm-debug.log*
-/winrates-frontend/yarn-debug.log*
-/winrates-frontend/yarn-error.log*
+/fileuploadtron-frontend/npm-debug.log*
+/fileuploadtron-frontend/yarn-debug.log*
+/fileuploadtron-frontend/yarn-error.log*
