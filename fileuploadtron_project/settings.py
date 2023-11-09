@@ -36,14 +36,15 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-    "http://localhost:3000",
-    "http://192.168.50.214:8000",
-    "http://192.168.50.214:3000",
+    "http://localhost:8000/",
+    "http://localhost:3000/",
+    "http://192.168.50.214:8000/",
+    "http://192.168.50.214:3000/",
 ]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024 * 1024 # 10gb max upload size
 

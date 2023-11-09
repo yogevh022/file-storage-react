@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from django.shortcuts import HttpResponse, redirect, get_object_or_404
-from fileuploadtron_app.models import storedFile, CustomUser
-from .serializers import storedFileSerializer, CustomUserSerializer
+from fileuploadtron_app.models import storedFile, CustomUser, FileCollection
+from .serializers import storedFileSerializer, CustomUserSerializer, CustomUserMinimalSerializer, FileCollectionSerializer
 from .forms import RegistrationForm
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -39,11 +39,14 @@ def get_user(**column):
     return CustomUser.objects.filter(**column).first()
 
 
+def get_file_collection(**column):
+    return FileCollection.objects.filter(**column).first()
+
+
 def get_authenticated_user_or_raise_exception(req):
     token = req.COOKIES.get('jwt')
     refresh_token = req.COOKIES.get('refresh_token')
     auth_context = AuthContext()
-
     if not token:
         raise AuthenticationFailed('Unauthenticated! No token')
     
@@ -57,9 +60,19 @@ def get_authenticated_user_or_raise_exception(req):
             raise AuthenticationFailed('Unauthenticated! Expired')
 
     user = get_user(id=payload['id'])
+    if not user:
+        raise AuthenticationFailed('User does not exist!')
     auth_context.user = user
     return auth_context
 
+
+def refresh_tokens_if_needed(response, auth_context):
+    if auth_context.new_tokens:
+        new_jwt_token = get_jwt_token(auth_context.user.id, **JWTConfig.JWT_EXP)
+        new_refresh_token = get_jwt_token(auth_context.user.id, **JWTConfig.REFRESH_TOKEN_EXP)
+        response.set_cookie(key='jwt', value=new_jwt_token, httponly=True)
+        response.set_cookie(key='refresh_token', value=new_refresh_token, httponly=True)
+    return response
 
 def login_required(redirect_url=None):
     def decorator(func):
@@ -96,8 +109,10 @@ def logout_required(func):
 def mainView(req, auth_context):
     with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
         html = f.read()
-    
-    return HttpResponse(html)
+
+    response = HttpResponse(html)
+    response = refresh_tokens_if_needed(response, auth_context)
+    return response
 
 
 def loginView(req):
@@ -108,19 +123,23 @@ def loginView(req):
 
 
 @api_view(['GET', 'POST'])
-def storedFiles(req):
+@login_required(redirect_url=None)
+def storedFiles(req, auth_context):
     if req.method == 'GET':
         stored_files = storedFile.objects.all()
         serializer = storedFileSerializer(stored_files, many=True)
         return Response(serializer.data)
     elif req.method == 'POST':
-        dataCopy = req.data.copy()
-        dataCopy['expirationDateTime'] = timezone.now() + datetime.timedelta(days=int(dataCopy["expiresInDays"]))
-        serializer = storedFileSerializer(data=dataCopy)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            print(serializer.errors)
+        newFile = storedFile(
+            user=auth_context.user,
+            collection=get_file_collection(id=req.data['collection']),
+            title=req.data['title'],
+            fileData=req.data['fileData'],
+            fileSize=req.data['fileSize'],
+            expirationDateTime=timezone.now() + datetime.timedelta(days=int(req.data["expiresInDays"]))
+        )
+        serializer = storedFileSerializer(newFile)
+        newFile.save()
         return Response(serializer.data)
 
 
@@ -151,9 +170,7 @@ def register(req):
 def login(req):
     username = req.data['username']
     password = req.data['password']
-
     user = get_user(username=username)
-
     if user is None:
         raise AuthenticationFailed('User not found!')
     if not user.check_password(password):
@@ -200,6 +217,26 @@ def getUser(req, user_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST'])
+def getAllCollections(req):
+    if req.method == 'GET':
+        collections = FileCollection.objects.all()
+        serializer = FileCollectionSerializer(collections, many=True)
+        return Response(serializer.data)
+    elif req.method == 'POST':
+        return Response()
+
+
+@api_view(['GET'])
+def getCollection(req, collection_id):
+    collection = get_file_collection(id=collection_id)
+    if req.method == 'GET':
+        serializer = FileCollectionSerializer(collection)
+        return Response(serializer.data)
+        
+    return Response()
+
+
 @api_view(['GET'])
 @login_required(redirect_url="/login")
 def get_current_user(req, auth_context):
@@ -208,7 +245,7 @@ def get_current_user(req, auth_context):
 
     return Response(serializer.data)
 
-
+@api_view(['GET', 'POST'])
 @login_required(redirect_url="/")
 def testv(req, auth_context):
     return HttpResponse('some')

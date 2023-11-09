@@ -7,7 +7,7 @@ function UserProfileWidget(props) {
     return (
         <div className="userProfileWidget">
             {/* <img className="logoutButton" src={logoutIcon}/> */}
-            { props.currentUser && <div className="currentUsername">{props.currentUser.username}</div>}
+            { props.currentUser && <div className="currentUsername" onClick={props.tmpHandleLogout}>{props.currentUser.username}</div>}
             <div className="widgetSep">•</div>
             <div className="selectedFileCollection">{props.selectedFileCollection}</div>
         </div>

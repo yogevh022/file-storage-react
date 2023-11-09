@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, uploaderName, title, fileData, fileSize, expirationDateTime, displayIcon}) {
+function StoredFile({fileId, user, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}) {
     const sfcRef = useRef(null);
     const [animClass, setAnimClass] = useState("");
 
@@ -116,7 +116,7 @@ function StoredFile({fileId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreate
             <div className='storedFileInfoContainer'>
                 <div className='sfTitle'>{title}</div>
                 <div className='sfInfoContainer'>
-                    <span className='sfUploader'>{uploaderName}</span>
+                    <span className='sfUploader'>{user ? user.username : 'unknown'}</span>
                     <div className='sfSize'>{fileSizeNum}{fileSizeUnit}</div>
                 </div>
                 {/* <span>{fileData}</span> */}

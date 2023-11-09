@@ -15,6 +15,10 @@ function MainApp() {
     const [isMenuActive, setIsMenuActive] = useState(false);
     const [selectedFileCollection, setSelectedFileCollection] = useState("Public file collection");
 
+    useEffect(()=> {
+        console.log(currentUser);
+    }, [currentUser]);
+
     const handlePostedDataResponse = (data) => {
         setPostData(data);
     }
@@ -34,9 +38,9 @@ function MainApp() {
     return (
         <div className='globalContainer'>
         <Darkscreen isActive={isMenuActive}/>
-        <TopBar selectedFileCollection={selectedFileCollection} currentUser={currentUser} isLoadingUser={isLoadingUser}/>
+        <TopBar selectedFileCollection={selectedFileCollection} currentUser={currentUser}/>
         <FilesContainer postDataResponse={postData} setPostDataResponse={setPostData} onCopyClipboard={handleCopyClipboard} onUnableCopyClipboard={handleUnableToCopy} />
-        <BottomBar onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
+        <BottomBar currentUser={currentUser} onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
         </div>
     )
 }

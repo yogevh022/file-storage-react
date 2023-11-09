@@ -46,10 +46,6 @@ function BottomBar(props) {
         props.setMenuActive(false);
     }
 
-    const handleUnableToCopy = () => {
-        //
-    }
-
     const callPopup = (popupType, fileData) => {
         setIsPopupActive(true);
         setPopupText(getPopupText(popupType, fileData['title']));
@@ -97,7 +93,7 @@ function BottomBar(props) {
         <div className="bottomBar">
             <div id="botTray" className={`bottomTray ${trayOpen ? 'bottomTrayOpen' : ''}`}>
                 <PopupTray key={`${popupId}`} popupIconUrl={popupIcon} popupTextList={popupText} isPopupActive={isPopupActive} setIsPopupActive={setIsPopupActive} popupLifespanMili={popupLifespanMili}/>
-                <FileUploadForm formId={formId} trayOpen={trayOpen} setTrayOpen={setTrayOpen} onFileUploadPress={handleFileUploadPress} onFileUploadComplete={handleFileUploadComplete} onPostResponse={onPostResponseReceivedWrapper}/>
+                <FileUploadForm formId={formId} currentUser={props.currentUser} trayOpen={trayOpen} setTrayOpen={setTrayOpen} onFileUploadPress={handleFileUploadPress} onFileUploadComplete={handleFileUploadComplete} onPostResponse={onPostResponseReceivedWrapper}/>
             </div>
         </div>
     )

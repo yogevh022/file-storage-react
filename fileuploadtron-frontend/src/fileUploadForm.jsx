@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
 
-function FileUploadForm({ formId, onPostResponse, onFileUploadPress, onFileUploadComplete, trayOpen, setTrayOpen }) {
-    const [uploaderName, setUploaderName] = useState('default');
+function FileUploadForm({ formId, currentUser, onPostResponse, onFileUploadPress, onFileUploadComplete, trayOpen, setTrayOpen }) {
     const [title, setTitle] = useState('');
     const [titlePlaceholder, setTitlePlaceholder] = useState('');
     const [expiresInDays, setExpiresInDays] = useState(1);
@@ -68,13 +67,13 @@ function FileUploadForm({ formId, onPostResponse, onFileUploadPress, onFileUploa
         onFileUploadComplete();
 
         const newFileFormData = new FormData();
-        newFileFormData.append('uploaderName', uploaderName);
         newFileFormData.append('title', generateFileTitle(title, titlePlaceholder));
+        newFileFormData.append('collection', currentUser.file_collections[0].id);
         newFileFormData.append('fileData', currentFile);
         newFileFormData.append('fileSize', fileSize);
         newFileFormData.append('expiresInDays', expiresInDays);
 
-        fetch('http://192.168.50.214:8000/files/', {
+        fetch('/files/', {
             method: 'POST',
             'Content-Type': 'multipart/form-data',
             body: newFileFormData
@@ -112,22 +111,13 @@ function FileUploadForm({ formId, onPostResponse, onFileUploadPress, onFileUploa
                 onChange={handleFileUpload}
                 multiple={false}
             />
-            <label style={{display: 'none'}}>uploaderName</label>
-            <input style={{display: 'none'}}
-                type="text"
-                required
-                value={uploaderName}
-                onChange={e => setUploaderName(e.target.value)}
-            />
             <div className="inputGrid">
-                {/* <label className="titleLabel">title</label> */}
                 <input className="titleInput"
                     type="text"
                     value={title}
                     placeholder={titlePlaceholder}
                     onChange={e => setTitle(e.target.value)}
                 />
-                {/* <label className="expireLabel">expires in</label> */}
                 <select className="expireSelect"
                     value={expiresInDays}
                     onChange={e => setExpiresInDays(e.target.value)}

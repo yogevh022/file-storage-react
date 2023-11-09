@@ -5,7 +5,7 @@ import getFileTypeIcon from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
 
 function FilesContainer(props) {
-    const {data: filesData, isLoading} = useFetch("http://192.168.50.214:8000/files/");
+    const {data: filesData, isLoading} = useFetch("/files/");
     const [displayData, setDisplayData] = useState(null);
     const alreadyAnimated = new Set();
 
@@ -31,6 +31,7 @@ function FilesContainer(props) {
     useEffect(() => {
         if (props.postDataResponse !== null) {
             setDisplayData((displayData) => {return [...displayData, props.postDataResponse]});
+            console.log(props.postDataResponse);
         }
 
     }, [props.postDataResponse]);
@@ -44,7 +45,7 @@ function FilesContainer(props) {
             <StoredFile
             key={item['id']}
             fileId={item['id']}
-            uploaderName={item['uploaderName']}
+            user={item['user']}
             title={item['title']}
             fileData={item['fileData']}
             fileSize={item['fileSize']}

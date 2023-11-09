@@ -3,25 +3,15 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 import datetime
 
+def current_date():
+    return timezone.now()
+
 def default_expiration_date():
     #by default expiration datetime is now+1hour
     return timezone.now() + datetime.timedelta(hours=1)
 
 def default_integer():
     return 0
-
-class storedFile(models.Model):
-    uploaderName = models.CharField(max_length=64)
-    title = models.CharField(max_length=260)    # 260 is max windows file name limit
-    fileData = models.FileField(upload_to="stored_files/")
-    fileSize = models.BigIntegerField(default=default_integer)
-    expirationDateTime = models.DateTimeField(default=default_expiration_date)
-
-    def delete(self, *args, **kwargs):
-        if self.fileData:
-            self.fileData.delete(save=False)
-        super().delete(*args, **kwargs)
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -61,3 +51,26 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class FileCollection(models.Model):
+    name = models.CharField(max_length=255)
+    users = models.ManyToManyField(CustomUser, related_name='file_collections', blank=True)
+    
+def pog():
+    return None
+
+class storedFile(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    collection = models.ForeignKey(FileCollection, on_delete=models.CASCADE, null=True,default=pog)
+    title = models.CharField(max_length=260)    # 260 is max windows file name limit
+    fileData = models.FileField(upload_to="stored_files/")
+    fileSize = models.BigIntegerField(default=default_integer)
+    uploadDateTime = models.DateTimeField(default=current_date)
+    expirationDateTime = models.DateTimeField(default=default_expiration_date)
+
+    def delete(self, *args, **kwargs):
+        if self.fileData:
+            self.fileData.delete(save=False)
+        super().delete(*args, **kwargs)
+

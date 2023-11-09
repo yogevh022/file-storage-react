@@ -16,19 +16,23 @@ function TopBar(props) {
             method: 'POST'
         })
         .then(res=>{
-            navigate('/login');
+            if (res.ok) {
+                navigate('/login');
+            } else {
+                console.log(res);
+            }
         })
     }
 
     return (
         <div className="topBar">
             <div className="topBarWrap">
-                { props.isLoadingUser && <div>Loading...</div> }
-                <img className="logoutButton" onClick={handleLogout} src={logoutIcon}/>
+                {/* { props.isLoadingUser && <div>Loading...</div> } */}
+                {/* <img className="logoutButton" onClick={handleLogout} src={logoutIcon}/> */}
                 { props.currentUser && 
-                    <UserProfileWidget currentUser={props.currentUser} selectedFileCollection={props.selectedFileCollection} />
+                    <UserProfileWidget tmpHandleLogout={handleLogout} currentUser={props.currentUser} selectedFileCollection={props.selectedFileCollection} />
                 }
-                <img className="topBarLogo" src={appLogo}/>
+                <img className="topBarLogo" src={appLogo} onClick={handleLogout}/>
             </div>
         </div>
     )
