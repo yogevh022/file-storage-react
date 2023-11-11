@@ -38,9 +38,17 @@ def get_jwt_token(user_id, **expiration_delta):
 def get_user(**column):
     return CustomUser.objects.filter(**column).first()
 
+def get_all_files(**column):
+    return storedFile.objects.filter(**column)
 
 def get_file_collection(**column):
     return FileCollection.objects.filter(**column).first()
+
+def get_file_collections(**column):
+    return FileCollection.objects.filter(**column)
+
+def user_is_in_collection(user_id, collection_id):
+    return get_file_collection(id=collection_id).users.filter(id=user_id).exists()
 
 
 def get_authenticated_user_or_raise_exception(req):
@@ -124,28 +132,32 @@ def loginView(req):
 
 @api_view(['GET', 'POST'])
 @login_required(redirect_url=None)
-def storedFiles(req, auth_context):
+def storedFiles(req, auth_context, collection_id=None):
     if req.method == 'GET':
-        stored_files = storedFile.objects.all()
+        stored_files = get_all_files(collection=collection_id)
         serializer = storedFileSerializer(stored_files, many=True)
         return Response(serializer.data)
     elif req.method == 'POST':
-        newFile = storedFile(
-            user=auth_context.user,
-            collection=get_file_collection(id=req.data['collection']),
-            title=req.data['title'],
-            fileData=req.data['fileData'],
-            fileSize=req.data['fileSize'],
-            expirationDateTime=timezone.now() + datetime.timedelta(days=int(req.data["expiresInDays"]))
-        )
-        serializer = storedFileSerializer(newFile)
-        newFile.save()
-        return Response(serializer.data)
+        collection_id = req.data['collection']
+        if user_is_in_collection(auth_context.user.id ,collection_id):
+            newFile = storedFile(
+                user=auth_context.user,
+                collection=get_file_collection(id=collection_id),
+                title=req.data['title'],
+                fileData=req.data['fileData'],
+                fileSize=req.data['fileSize'],
+                expirationDateTime=timezone.now() + datetime.timedelta(days=int(req.data["expiresInDays"]))
+            )
+            serializer = storedFileSerializer(newFile)
+            newFile.save()
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(['GET'])
-def downloadView(req, fileid):
-    sf = get_object_or_404(storedFile, pk=fileid)
+def downloadView(req, collection_id, file_id):
+    sf = get_object_or_404(storedFile, pk=file_id)
     res = FileResponse(open(sf.fileData.path, 'rb'))
     res['Content-Disposition'] = f'attachment; filename="{sf.title}"'
     return res
@@ -218,13 +230,24 @@ def getUser(req, user_id):
 
 
 @api_view(['GET', 'POST'])
-def getAllCollections(req):
+@login_required(redirect_url=None)
+def getAllCollections(req, auth_context):
     if req.method == 'GET':
-        collections = FileCollection.objects.all()
+        collections = get_file_collections(users__in=[auth_context.user.id])
         serializer = FileCollectionSerializer(collections, many=True)
-        return Response(serializer.data)
+        response = Response(serializer.data)
+        response = refresh_tokens_if_needed(response, auth_context)
+        return response
     elif req.method == 'POST':
-        return Response()
+        new_collection = FileCollection.objects.create(name=req.data['name'])
+        new_collection.users.add(auth_context.user)
+        new_collection.save()
+        serializer = FileCollectionSerializer(data=new_collection)
+        if serializer.is_valid():
+            pass
+        response = Response(serializer.data)
+        response = refresh_tokens_if_needed(response, auth_context)
+        return response
 
 
 @api_view(['GET'])

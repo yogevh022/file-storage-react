@@ -1,13 +1,13 @@
 import FilesContainer from './filesContainer';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import TopBar from './topBar';
 import BottomBar from './bottomBar';
 import Darkscreen from './darkscreen';
 import useFetch from './useFetch';
 
-function MainApp() {
-    const navigate = useNavigate();
+function MainApp(props) {
+    const { collectionId } = useParams();
     const { data: currentUser, isLoading: isLoadingUser } = useFetch("/api/current_user/");
     const [postData, setPostData] = useState(null);
     const [lastClipboard, setLastClipboard] = useState(null);
@@ -39,8 +39,8 @@ function MainApp() {
         <div className='globalContainer'>
         <Darkscreen isActive={isMenuActive}/>
         <TopBar selectedFileCollection={selectedFileCollection} currentUser={currentUser}/>
-        <FilesContainer postDataResponse={postData} setPostDataResponse={setPostData} onCopyClipboard={handleCopyClipboard} onUnableCopyClipboard={handleUnableToCopy} />
-        <BottomBar currentUser={currentUser} onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
+        <FilesContainer collectionId={collectionId} postDataResponse={postData} setPostDataResponse={setPostData} onCopyClipboard={handleCopyClipboard} onUnableCopyClipboard={handleUnableToCopy} />
+        <BottomBar currentUser={currentUser} collectionId={collectionId} onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
         </div>
     )
 }

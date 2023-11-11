@@ -8,6 +8,8 @@ function BottomBar(props) {
     const getPopupText = (popupType, dynamicText) => {
         if (popupType === 'upload') {
             return ['Uploaded ', dynamicText];
+        } else if (popupType === '!upload') {
+            return ['Unable to Upload ', dynamicText];
         } else if (popupType === 'copy') {
             return ['Copied ', dynamicText, " to clipboard."];
         } else if (popupType === '!copy') {
@@ -31,6 +33,7 @@ function BottomBar(props) {
 
     const popupIcons = {
         "upload": uploadCompleteIcon,
+        "!upload": warningTriangleIcon,
         "copy": copyCompleteIcon,
         "!copy": warningTriangleIcon
     }
@@ -88,12 +91,16 @@ function BottomBar(props) {
         props.onPostResponseReceived(fileData);
     }
 
+    const onPostFailure = (fileData) => {
+        callPopup("!upload", fileData);
+    }
+
 
     return (
         <div className="bottomBar">
             <div id="botTray" className={`bottomTray ${trayOpen ? 'bottomTrayOpen' : ''}`}>
                 <PopupTray key={`${popupId}`} popupIconUrl={popupIcon} popupTextList={popupText} isPopupActive={isPopupActive} setIsPopupActive={setIsPopupActive} popupLifespanMili={popupLifespanMili}/>
-                <FileUploadForm formId={formId} currentUser={props.currentUser} trayOpen={trayOpen} setTrayOpen={setTrayOpen} onFileUploadPress={handleFileUploadPress} onFileUploadComplete={handleFileUploadComplete} onPostResponse={onPostResponseReceivedWrapper}/>
+                <FileUploadForm formId={formId} currentUser={props.currentUser} collectionId={props.collectionId} trayOpen={trayOpen} setTrayOpen={setTrayOpen} onFileUploadPress={handleFileUploadPress} onFileUploadComplete={handleFileUploadComplete} onPostResponse={onPostResponseReceivedWrapper} onPostFailure={onPostFailure}/>
             </div>
         </div>
     )

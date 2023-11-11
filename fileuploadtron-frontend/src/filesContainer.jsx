@@ -5,7 +5,7 @@ import getFileTypeIcon from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
 
 function FilesContainer(props) {
-    const {data: filesData, isLoading} = useFetch("/files/");
+    const {data: filesData, isLoading} = useFetch(`/api/collections/${props.collectionId}/files/`);
     const [displayData, setDisplayData] = useState(null);
     const alreadyAnimated = new Set();
 
@@ -31,11 +31,8 @@ function FilesContainer(props) {
     useEffect(() => {
         if (props.postDataResponse !== null) {
             setDisplayData((displayData) => {return [...displayData, props.postDataResponse]});
-            console.log(props.postDataResponse);
         }
-
     }, [props.postDataResponse]);
-
 
     return (
     <div className='filesContainer'>
@@ -45,6 +42,7 @@ function FilesContainer(props) {
             <StoredFile
             key={item['id']}
             fileId={item['id']}
+            collectionId={props.collectionId}
             user={item['user']}
             title={item['title']}
             fileData={item['fileData']}

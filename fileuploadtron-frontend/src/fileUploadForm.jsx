@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
 
-function FileUploadForm({ formId, currentUser, onPostResponse, onFileUploadPress, onFileUploadComplete, trayOpen, setTrayOpen }) {
+function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onFileUploadPress, onPostFailure, onFileUploadComplete, trayOpen, setTrayOpen }) {
     const [title, setTitle] = useState('');
     const [titlePlaceholder, setTitlePlaceholder] = useState('');
     const [expiresInDays, setExpiresInDays] = useState(1);
@@ -62,18 +62,24 @@ function FileUploadForm({ formId, currentUser, onPostResponse, onFileUploadPress
         return _titlePlaceholder;
     }
 
+    const uploadSuccess = (responseData) => {
+        setTitle('');
+        onPostResponse(responseData);
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onFileUploadComplete();
+        var generatedFileTitle = generateFileTitle(title, titlePlaceholder);
 
         const newFileFormData = new FormData();
-        newFileFormData.append('title', generateFileTitle(title, titlePlaceholder));
-        newFileFormData.append('collection', currentUser.file_collections[0].id);
+        newFileFormData.append('title', generatedFileTitle);
+        newFileFormData.append('collection', collectionId);
         newFileFormData.append('fileData', currentFile);
         newFileFormData.append('fileSize', fileSize);
         newFileFormData.append('expiresInDays', expiresInDays);
 
-        fetch('/files/', {
+        fetch(`/api/collections/${collectionId}/files/`, {
             method: 'POST',
             'Content-Type': 'multipart/form-data',
             body: newFileFormData
@@ -81,10 +87,13 @@ function FileUploadForm({ formId, currentUser, onPostResponse, onFileUploadPress
         .then((res) => {
             if (res.ok) {
                 return res.json();
+            } else {
+                return Promise.reject("not uploaded successfully");
             }
         })
-        .then((resData)=>{setTitle('');onPostResponse(resData);})
+        .then(uploadSuccess)
         .catch(error => {
+            onPostFailure({"title": generatedFileTitle, "id": 1});
             console.log("tech error; ", error);
         })
     }

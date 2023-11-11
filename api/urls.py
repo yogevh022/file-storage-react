@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('files/<int:fileid>', views.downloadView),
-    path('files/', views.storedFiles),
+    path('api/collections/<int:collection_id>/files/<int:file_id>', views.downloadView),
+    path('api/collections/<int:collection_id>/files/', views.storedFiles),
     path('users/<int:user_id>', views.getUser),
     path('users/', views.getAllUsers),
     path('api/collections/<int:collection_id>', views.getCollection),

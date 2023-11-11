@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function StoredFile({fileId, user, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}) {
+function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}) {
     const sfcRef = useRef(null);
     const [animClass, setAnimClass] = useState("");
 
@@ -19,12 +19,16 @@ function StoredFile({fileId, user, onUnableCopyClipboard,onCopyClipboard,isNewly
         }
     }, [isNewlyCreated]);
     
+    // const getFileUrl = (_fileId) => {
+    //     var currentUrl = window.location.href;
+    //     if (currentUrl.endsWith('/')) {
+    //         currentUrl = currentUrl.slice(0, -1);
+    //     }
+    //     return `${currentUrl}/files/${_fileId}`;
+    // }
+
     const getFileUrl = (_fileId) => {
-        var currentUrl = window.location.href;
-        if (currentUrl.endsWith('/')) {
-            currentUrl = currentUrl.slice(0, -1);
-        }
-        return `${currentUrl}/files/${_fileId}`;
+        return `/api/collections/${collectionId}/files/${fileId}`;
     }
 
     const copyToClipboard = (text) => {
@@ -56,7 +60,7 @@ function StoredFile({fileId, user, onUnableCopyClipboard,onCopyClipboard,isNewly
             var __DEBUG = false;
             if (!__DEBUG) { window.location.href = getFileUrl(fileId); return; }
 
-            fetch(`/files/${fileId}`)
+            fetch(`/api/collections/${collectionId}/files/${fileId}/`)
             .then(res => res.blob())
             .then(blob => {
                 const fileurl = window.URL.createObjectURL(blob);
