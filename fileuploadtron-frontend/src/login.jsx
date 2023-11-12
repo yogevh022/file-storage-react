@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import useFetch from './useFetch';
+import { Navigate } from 'react-router-dom';
 
 function Login() {
+    const { data: currentUser, isLoading: isLoadingUser } = useFetch("/api/current_user/");
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -45,6 +49,7 @@ function Login() {
 
     return (
         <div className='tempLogin'>
+            { currentUser && <Navigate to="/collections/"/>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <input

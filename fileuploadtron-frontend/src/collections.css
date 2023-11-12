@@ -6,6 +6,28 @@
     --colAnimLength: 0.15s;
 }
 
+@media screen and (max-width:768px) {
+    :root {
+        --colAnimLength: 0s;
+    }
+
+    .collectionItem:active:not(.favoriteButton:active) > .CollectionHoverTint {
+        background-color: rgba(75, 79, 124, 0.8);
+    }
+    .collectionItem:active:not(.favoriteButton:active) {
+        background-color: var(--dk25) !important;
+    }
+
+    .collectionItem .favoriteButton {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+    .favoriteButton:active {
+        background-position: 100% 0;
+        box-shadow: 0 0 5px 1px var(--lt_d);
+    }
+}
+
 @media (hover:hover) {
     .collectionItem:hover > .CollectionHoverTint {
         background-color: rgba(75, 79, 124, 0.8);

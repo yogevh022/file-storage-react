@@ -7,11 +7,11 @@ function UserProfileWidget(props) {
     return (
         <div className="userProfileWidget">
             {/* <img className="logoutButton" src={logoutIcon}/> */}
-            { props.currentUser && <div className="currentUsername" onClick={props.tmpHandleLogout}>{props.currentUser.username}</div>}
+            { props.currentUser && <div className="currentUsername" onClick={props.goToUserCollections}>{props.currentUser.username}</div>}
             { props.selectedFileCollection &&
                 <>
                     <div className="widgetSep">•</div>
-                    <div className="selectedFileCollection">{props.selectedFileCollection}</div>
+                    <div className="selectedFileCollection">{props.selectedFileCollection && props.selectedFileCollection.name}</div>
                 </>
             }
         </div>

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='storedfile',
             name='collection',
-            field=models.ForeignKey(default=fileuploadtron_app.models.pog, null=True, on_delete=django.db.models.deletion.CASCADE, to='fileuploadtron_app.filecollection'),
+            field=models.ForeignKey(default=fileuploadtron_app.models.default_None, null=True, on_delete=django.db.models.deletion.CASCADE, to='fileuploadtron_app.filecollection'),
         ),
     ]

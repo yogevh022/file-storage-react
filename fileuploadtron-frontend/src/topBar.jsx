@@ -24,13 +24,17 @@ function TopBar(props) {
         })
     }
 
+    const goToUserCollections = () => {
+        navigate('/collections');
+    }
+
     return (
         <div className="topBar">
             <div className="topBarWrap">
                 {/* { props.isLoadingUser && <div>Loading...</div> } */}
                 {/* <img className="logoutButton" onClick={handleLogout} src={logoutIcon}/> */}
                 { props.currentUser && 
-                    <UserProfileWidget tmpHandleLogout={handleLogout} currentUser={props.currentUser} selectedFileCollection={props.selectedFileCollection} />
+                    <UserProfileWidget currentUser={props.currentUser} goToUserCollections={goToUserCollections} selectedFileCollection={props.selectedFileCollection} />
                 }
                 <img className="topBarLogo" src={appLogo} onClick={handleLogout}/>
             </div>

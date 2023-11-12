@@ -7,13 +7,17 @@ class FileCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileCollection
         fields = '__all__'
+        extra_kwargs = {
+            'hashed_password': {'write_only': True}
+        }
+        # exclude = ['files']
 
     files = serializers.SerializerMethodField()
 
     def get_files(self, obj):
-        files = storedFile.objects.filter(collection=obj)
-        serializer = storedFileSerializer(files, many=True)
-        return serializer.data
+        file_id_list = storedFile.objects.filter(collection=obj).values_list('id', flat=True)
+        # serializer = storedFileSerializer(files, many=True)
+        return file_id_list
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

@@ -162,6 +162,15 @@ def downloadView(req, collection_id, file_id):
     res['Content-Disposition'] = f'attachment; filename="{sf.title}"'
     return res
 
+@api_view(['GET'])
+@login_required(redirect_url=None)
+def collection_picture_view(req, auth_context, collection_id=None):
+    collection = get_file_collection(id=collection_id)
+    if collection and collection.picture:
+        pic_path = collection.picture.path
+        return FileResponse(open(pic_path, 'rb'), content_type='image/*')
+    return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['POST'])
 def register(req):
@@ -241,6 +250,8 @@ def getAllCollections(req, auth_context):
     elif req.method == 'POST':
         new_collection = FileCollection.objects.create(name=req.data['name'])
         new_collection.users.add(auth_context.user)
+        if collection_password := req.data.get('password', None):
+            new_collection.set_password(collection_password)
         new_collection.save()
         serializer = FileCollectionSerializer(data=new_collection)
         if serializer.is_valid():
@@ -260,13 +271,33 @@ def getCollection(req, collection_id):
     return Response()
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'DELETE'])
 @login_required(redirect_url="/login")
 def get_current_user(req, auth_context):
-    user = auth_context.user
-    serializer = CustomUserSerializer(user)
-
-    return Response(serializer.data)
+    if req.method == 'GET':
+        user = auth_context.user
+        serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
+    elif req.method == 'PUT':
+        if favoriteObj := req.data.get('favoriteCollection', None):
+            if not get_file_collection(id=favoriteObj['id']):
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            user = auth_context.user
+            if favoriteObj['isFavorite'] == True:
+                if favoriteObj['id'] not in user.favorite_collections.values_list('id', flat=True):
+                    user.favorite_collections.add(favoriteObj['id'])
+            else:
+                if favoriteObj['id'] in user.favorite_collections.values_list('id', flat=True):
+                    user.favorite_collections.remove(favoriteObj['id'])
+                else:
+                    print('already not favorited xd')
+            user.save()
+            serializer = CustomUserSerializer(user)
+            return Response(serializer.data)
+            # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif req.method == 'DELETE':
+        auth_context.user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 @login_required(redirect_url="/")

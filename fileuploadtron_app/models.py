@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
+from django.contrib.auth.hashers import make_password
 import datetime
 
 def current_date():
@@ -12,6 +13,9 @@ def default_expiration_date():
 
 def default_integer():
     return 0
+
+def default_None():
+    return None
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -37,6 +41,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
+    favorite_collections = models.ManyToManyField('fileuploadtron_app.FileCollection', related_name='favorited_by', blank=True)
 
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -56,13 +61,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class FileCollection(models.Model):
     name = models.CharField(max_length=255)
     users = models.ManyToManyField(CustomUser, related_name='file_collections', blank=True)
+    picture = models.FileField(upload_to="collection_pictures/", null=True, blank=True, default=default_None)
+    hashed_password = models.CharField(max_length=128, default=make_password(''))
+
+    def set_password(self, raw_password):
+        self.hashed_password = make_password(raw_password)
     
-def pog():
-    return None
+    def check_password(self, raw_password):
+        return self.hashed_password == make_password(raw_password)
+    
 
 class storedFile(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
-    collection = models.ForeignKey(FileCollection, on_delete=models.CASCADE, null=True,default=pog)
+    collection = models.ForeignKey(FileCollection, on_delete=models.CASCADE, null=True,default=default_None)
     title = models.CharField(max_length=260)    # 260 is max windows file name limit
     fileData = models.FileField(upload_to="stored_files/")
     fileSize = models.BigIntegerField(default=default_integer)

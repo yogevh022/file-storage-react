@@ -1,4 +1,5 @@
 /stored_files/*
+/collection_pictures/*
 
 # dependencies
 /fileuploadtron-frontend/node_modules

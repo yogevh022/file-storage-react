@@ -9,7 +9,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/collections/:collectionId' Component={MainApp} />
+        <Route exact path="/" element={<Navigate to="/collections"/>}/>
+        <Route path='/collections/:collectionId/' Component={MainApp} />
         <Route exact path='/collections' Component={Collections} />
         <Route path='/login' Component={Login} />
       </Routes>

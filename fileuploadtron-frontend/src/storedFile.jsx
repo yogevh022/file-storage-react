@@ -19,16 +19,12 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
         }
     }, [isNewlyCreated]);
     
-    // const getFileUrl = (_fileId) => {
-    //     var currentUrl = window.location.href;
-    //     if (currentUrl.endsWith('/')) {
-    //         currentUrl = currentUrl.slice(0, -1);
-    //     }
-    //     return `${currentUrl}/files/${_fileId}`;
-    // }
-
     const getFileUrl = (_fileId) => {
-        return `/api/collections/${collectionId}/files/${fileId}`;
+        var currentUrl = window.location.href;
+        if (currentUrl.endsWith('/')) {
+            currentUrl = currentUrl.slice(0, -1);
+        }
+        return `${currentUrl}/api/collections/${collectionId}/files/${_fileId}/`;
     }
 
     const copyToClipboard = (text) => {
