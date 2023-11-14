@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
 
-function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onFileUploadPress, onPostFailure, onFileUploadComplete, trayOpen, setTrayOpen }) {
+function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen }) {
     const [title, setTitle] = useState('');
     const [titlePlaceholder, setTitlePlaceholder] = useState('');
     const [expiresInDays, setExpiresInDays] = useState(1);
@@ -31,6 +31,7 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onF
         var selected_file;
         if (e.target.files.length > 0) {
             selected_file = e.target.files[0];
+            setTitle('');
         } else {
             if (currentFile) {
                 selected_file = currentFile;
@@ -41,7 +42,7 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onF
         setCurrentFile(selected_file);
         setTitlePlaceholder(selected_file.name);
         setFileSIze(selected_file.size);
-        onFileUploadPress();
+        setTrayOpen(2);
     }
 
     const handleExternalInputButtonClick = (e) => {
@@ -69,7 +70,7 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onF
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onFileUploadComplete();
+        closeTray();
         var generatedFileTitle = generateFileTitle(title, titlePlaceholder);
 
         const newFileFormData = new FormData();
@@ -94,24 +95,25 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onF
         .then(uploadSuccess)
         .catch(error => {
             onPostFailure({"title": generatedFileTitle, "id": 1});
+            setTitle('');
             console.log("tech error; ", error);
         })
     }
 
     return (
-        <form id={formId} className="uploadForm" ref={formRef} onSubmit={handleSubmit} encType="multipart/form-data">
+        <form id={formId} className="uploadForm" ref={formRef}/* onSubmit={handleSubmit}*/ encType="multipart/form-data">
             <button 
             type="button"
-            className={`uploadButton ${trayOpen ? 'uploadButtonOpen' : ''}`}
+            className={`uploadButton ${trayOpen !== 0 ? 'uploadButtonOpen' : ''}`}
             onClick={handleExternalInputButtonClick}>
                 <object 
                 aria-label="+"
                 className="uploadImg"
                 data={attachFileIcon}
                 type="image/svg+xml"></object>
-                {trayOpen ? reuploadButtonLabel : uploadButtonLabel}
+                {trayOpen === 1 ? reuploadButtonLabel : uploadButtonLabel}
             </button>
-            { !trayOpen && fileInputIsntEmpty() && clearFileInput() }
+            { trayOpen === 0 && fileInputIsntEmpty() && clearFileInput() }
             <input 
                 ref={fileInputRef}
                 className="fileInput"
@@ -136,7 +138,7 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onF
                     <option value={30}>30 Days</option>
                 </select>
             </div>
-            <button form={formId} className="submitButton" type="submit">
+            <button form={formId} className="submitButton" onClick={handleSubmit} type="button" /*type="submit"*/>
             <object 
                 className="submitImg"
                 data={cloudUploadIcon}

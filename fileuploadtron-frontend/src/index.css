@@ -1,17 +1,18 @@
 :root {
   --sfcpad: 15px;
-  --inputheight: 70px;
-  --barheight: calc(var(--inputheight) * 2);
   --inputpad: 25px;
-  --uimrad: 5px;
-  --uirad: 35px;
+  --inputheight: 60px;
+  --barheight: calc(var(--inputheight) * 2);
   --uipad: calc(var(--inputheight) * 0.5);
-  --uifontsize: 22px;
+  --uirad: 35px;
+  --uimrad: 5px;
+  --uifontsize: 26px;
   --fileimgsize: 40px;
   --sfsizewidth: 60px;
   --sfbtnwidth: 30px;
 
-  --miconwidth: 27px;
+  --miconwidth: 24px; /* 27px */
+  --miconwidthLarge: 27px; /* 27px */
 
   --btnanimlen: .4s;
 
@@ -54,6 +55,11 @@
   :root {
     --sfcouterpad: 10px;  /* this is the mobile size of this var */
     --btnanimlen: .2s;
+
+    --inputpad: 25px;
+    --inputheight: 70px;
+    --barheight: calc(var(--inputheight) * 2);
+    --uipad: calc(var(--inputheight) * 0.5);
   }
 
   .expireSelect {
@@ -150,6 +156,22 @@ button {
   -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
 }
 
+.hidden {
+  display: none !important;
+}
+
+.invis {
+  opacity: 0 !important;
+}
+
+.bog {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  background-color: green;
+}
+
 .ds {
   position: fixed;
   width: 100%;
@@ -191,6 +213,7 @@ button {
   z-index: 1000;
 
   height: 70px;
+  min-height: 70px;
   width: 100%;
   background-color: var(--dk1);
 
@@ -298,10 +321,25 @@ button {
   /* overflow: hidden; */
 }
 
+.bottomTrayFullyClosed {
+  transform: translateY( calc(var(--barheight) * 1)) !important;
+}
+
+.bottomTrayOpenMinimal {
+  transform: translateY( calc( calc(var(--barheight) * -1) + (calc(var(--uipad) * 1)) )) !important;
+  background-color: var(--dk1);
+}
+
 .bottomTrayOpen {
   transform: translateY( calc( calc(var(--barheight) * -2) + (calc(var(--uipad) * 2)) )) !important;
   background-color: var(--dk1);
 }
+
+.bottomTrayOpenExtended {
+  transform: translateY( calc( calc(var(--barheight) * -4) + (calc(var(--uipad) * 4)) )) !important;
+  background-color: var(--dk1);
+}
+
 
 .popupTray {
   position: absolute;
@@ -378,6 +416,7 @@ button {
 .uploadForm {
   width: var(--uploadbtnwidth);
   max-width: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -390,6 +429,8 @@ button {
 .inputGrid {
   width: var(--uploadbtnwidth);
   max-width: 100%;
+  height: var(--inputheight);
+  max-height: var(--inputheight);
   display: grid;
   grid-template-columns: 75% 25%;
 
@@ -402,18 +443,20 @@ button {
 
 .titleInput {
   height: var(--inputheight);
-  padding: var(--inputpad);
+  max-height: var(--inputheight);
+  padding-left: var(--inputpad);
+  padding-right: var(--inputpad);
   box-sizing: border-box;
   outline: none;
   border: none;
   border-radius: 0px;
 
+  
   color: var(--dk4);
   font-weight: 600;
   font-size: var(--uifontsize);
-
+  
   background-color: transparent;
-
 }
 
 .expireSelect {
@@ -432,12 +475,82 @@ button {
   text-align-last: center;
 }
 
+.textInput {
+  width: var(--uploadbtnwidth);
+  max-width: 100%;
+  height: var(--inputheight);
+  max-height: var(--inputheight);
+
+  color: var(--dk4);
+  font-weight: 400;
+  font-size: var(--uifontsize);
+
+  text-align: center;
+
+  padding-left: var(--inputpad);
+  padding-right: var(--inputpad);
+  box-sizing: border-box;
+
+  border: 2px solid var(--dk25);
+  border-radius: var(--uirad);
+  overflow: hidden;
+
+  margin-bottom: var(--uipad);
+
+  background-color: transparent;
+  outline: none;
+}
+.textInput::placeholder {
+  color: var(--dk2);
+}
+
+.passwordOn {
+  font-family: sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 40px !important;
+}
+
+.uiButton {
+  margin-bottom: var(--uipad);
+}
+
+.joinCollection {
+  background-size: 250% 100%;
+  background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
+  box-shadow: 0 0 10px 2px transparent;
+}
+
+.createCollection {
+  background-size: 250% 100%;
+  background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
+  box-shadow: 0 0 10px 2px transparent;
+}
+
+.collectionImageButton {
+  padding-right: var(--inputpad);
+  padding-left: var(--inputpad);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.collectionImageButtonIcon {
+  width: var(--miconwidth);
+  max-height: var(--miconwidth);
+}
+
+.collectionImageButton span {
+  /* font-weight: 400 !important; */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .uploadButton {
   outline: none;
   width: var(--uploadbtnwidth);
   max-width: 100%;
   height: var(--inputheight);
-  padding: var(--inputpad);
   border-radius: var(--uirad); /* max rad */
   font-weight: 600;
   font-size: var(--uifontsize);
@@ -488,7 +601,9 @@ button {
   width: var(--uploadbtnwidth);
   max-width: 100%;
   height: var(--inputheight);
-  padding: var(--inputpad);
+  max-height: var(--inputheight);
+  /* padding: var(--inputpad); */
+  box-sizing: border-box;
   border-radius: var(--uirad);
 
   font-weight: 600;
@@ -512,9 +627,9 @@ button {
 
 .submitImg {
   fill: inherit;
-  height: var(--miconwidth);
-  max-width: var(--miconwidth);
-  margin-left: calc(calc(var(--miconwidth) * -1) + 10px); /* 10px = uploadButton gap */
+  height: var(--miconwidthLarge);
+  max-width: var(--miconwidthLarge);
+  margin-left: calc(calc(var(--miconwidthLarge) * -1) + 10px); /* 10px = uploadButton gap */
   pointer-events: none;
 
   filter: brightness(1);
@@ -522,8 +637,9 @@ button {
 }
 
 .fileInput {
-  /* visibility: hidden; */
-  display: none;
+  visibility: hidden;
+  /* display: none; */
+  pointer-events: none;
   position: absolute;
 }
 

@@ -35,8 +35,22 @@ function MainApp(props) {
         <div className='globalContainer'>
         <Darkscreen isActive={isMenuActive}/>
         <TopBar selectedFileCollection={fileCollection} currentUser={currentUser}/>
-        <FilesContainer collectionId={collectionId} postDataResponse={postData} setPostDataResponse={setPostData} onCopyClipboard={handleCopyClipboard} onUnableCopyClipboard={handleUnableToCopy} />
-        <BottomBar currentUser={currentUser} collectionId={collectionId} onPostResponseReceived={handlePostedDataResponse} lastClipboardCopy={lastClipboard} setMenuActive={setMenuActive} unableClipboard={unableClipboard}/>
+        <FilesContainer
+            collectionId={collectionId}
+            postDataResponse={postData}
+            setPostDataResponse={setPostData}
+            onCopyClipboard={handleCopyClipboard}
+            onUnableCopyClipboard={handleUnableToCopy}
+        />
+        <BottomBar
+            currentUser={currentUser}
+            collectionId={collectionId}
+            onPostResponseReceived={handlePostedDataResponse}
+            lastClipboardCopy={lastClipboard}
+            setMenuActive={setMenuActive}
+            unableClipboard={unableClipboard}
+            formType='file'
+        />
         </div>
     )
 }

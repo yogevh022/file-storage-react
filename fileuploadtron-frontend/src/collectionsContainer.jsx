@@ -14,9 +14,15 @@ function CollectionsContainer(props) {
     const updateCollectionsRender = (collections_data, favorites) => {
         var favCollections = collections_data.filter(collection => favorites.includes(collection.id));
         var otherCollections = collections_data.filter(collection => !favorites.includes(collection.id));
-        favCollections.sort();
-        otherCollections.sort()
-        setDisplayCollections([...otherCollections, ...favCollections]);    // gets reversed
+        // favCollections.sort();
+        // otherCollections.sort();
+        setDisplayCollections([...favCollections, ...otherCollections]);
+    }
+
+    const addCollectionToLocal = (new_collection) => {
+        if (localCollectionsData) {
+            setLocalCollectionsData([...localCollectionsData, new_collection]);
+        }
     }
 
     useEffect(()=>{
@@ -33,25 +39,20 @@ function CollectionsContainer(props) {
         }
     }, [localCollectionsData, localFavorites]);
 
-    const handleCreate = () => {
-        return;
-        const newCollectionFormData = new FormData();
-        newCollectionFormData.append('name', "testing this rn");
+    useEffect(()=>{
+        if (props.postData) {
+            addCollectionToLocal(props.postData);
+        }
+    }, [props.postData])
 
-        fetch('/api/collections/', {
-            method: 'POST',
-            'Content-Type': 'multipart/form-data',
-            body: newCollectionFormData
-        })
-        .then((res)=>{res.json()})
-        .then((resj)=>{console.log(resj)})
-        .catch((e)=>{console.log(e)});
+    const handleCreate = () => {
+        props.openNewCollection();
     }
 
     return (
         <div className='collectionsContainer'>
             { isLoadingCollectionsData && <h2>LOADING COLLECTIONS</h2>}
-            { props.currentUser && displayCollections && displayCollections.toReversed().map((item, index) => (
+            { props.currentUser && displayCollections && displayCollections.map((item, index) => (
                 <Collection 
                     key={item['id']}
                     collectionId={item['id']}
@@ -68,7 +69,7 @@ function CollectionsContainer(props) {
                 />
             ))}
             { !isLoadingCollectionsData &&
-                <div className='collectionItem newCollection' onClick={handleCreate}>
+                <div id='newCollectionButton' className='collectionItem newCollection' onClick={handleCreate}>
                     <img src={addIcon}/>
                 </div>
             }

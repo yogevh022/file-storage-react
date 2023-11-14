@@ -253,10 +253,15 @@ def getAllCollections(req, auth_context):
         if collection_password := req.data.get('password', None):
             new_collection.set_password(collection_password)
         new_collection.save()
-        serializer = FileCollectionSerializer(data=new_collection)
-        if serializer.is_valid():
-            pass
-        response = Response(serializer.data)
+        
+        serialized_data = {
+            'id': new_collection.id,
+            'name': new_collection.name,
+            'users': new_collection.users.values_list('id', flat=True),
+            'files': []
+        }
+
+        response = Response(serialized_data)
         response = refresh_tokens_if_needed(response, auth_context)
         return response
 
