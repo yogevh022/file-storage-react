@@ -80,7 +80,12 @@
     width: 0px;
     visibility: hidden;
     background-color: var(--dk0);
-  }
+}
+
+.collectionsContainerPadder {
+    grid-column: 1 / -1;
+    height: 100px;
+}
 
 .collectionItem {
     width: 100%;

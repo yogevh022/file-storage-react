@@ -133,7 +133,16 @@ function BottomBar(props) {
     return (
         <div className="bottomBar">
             <div id="botTray" className={`bottomTray ${trayLevels[trayOpen]}`}>
-                <PopupTray key={`${popupId}`} popupIconUrl={popupIcon} popupTextList={popupText} isPopupActive={isPopupActive} setIsPopupActive={setIsPopupActive} popupLifespanMili={popupLifespanMili}/>
+                <PopupTray
+                key={`${popupId}`}
+                popupIconUrl={popupIcon}
+                popupTextList={popupText}
+                isPopupActive={isPopupActive}
+                setIsPopupActive={setIsPopupActive}
+                popupLifespanMili={popupLifespanMili}
+                trayLevel={trayOpen}
+                alwaysMargin={props.formType === 'collection' ? true : false}
+                />
                 { props.formType === 'file' && 
                 <FileUploadForm
                     formId={fileFormId}

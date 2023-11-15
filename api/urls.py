@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/users/<int:user_id>/', views.getUser),
     path('api/users/', views.getAllUsers),
     path('login/', views.loginView),
+    path('register/', views.registerView),
     path('collections/', views.mainView),
     path('test/', views.testv),
     path('', views.mainView),

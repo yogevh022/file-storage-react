@@ -73,6 +73,7 @@ function CollectionsContainer(props) {
                     <img src={addIcon}/>
                 </div>
             }
+            <div className='collectionsContainerPadder'></div>
         </div>
     )
 }

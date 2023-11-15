@@ -375,7 +375,7 @@ button {
 
   pointer-events: none;
 
-  transition: transform .3s, opacity .3s; /* same time as popupStartAnimClass vv */
+  transition: transform .3s, opacity .3s, margin .3s; /* same time as popupStartAnimClass vv */
 }
 
 .popupStartAnimClass {
@@ -385,6 +385,10 @@ button {
 .popup-hidden {
   opacity: 0;
   transform: scale(0.95);
+}
+
+.popup-margin {
+  margin-bottom: 50px;
 }
 
 .popupDynamicContent {
@@ -792,6 +796,9 @@ button {
   width: 400px;
   height: 100px;
   color: white;
+}
+.tempReg {
+  background-color: green !important;
 }
 
 

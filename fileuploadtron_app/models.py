@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 import datetime
 
 def current_date():
@@ -26,6 +26,7 @@ class CustomUserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        return user
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -59,7 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class FileCollection(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     users = models.ManyToManyField(CustomUser, related_name='file_collections', blank=True)
     picture = models.FileField(upload_to="collection_pictures/", null=True, blank=True, default=default_None)
     hashed_password = models.CharField(max_length=128, default=make_password(''))
@@ -68,8 +69,8 @@ class FileCollection(models.Model):
         self.hashed_password = make_password(raw_password)
     
     def check_password(self, raw_password):
-        return self.hashed_password == make_password(raw_password)
-    
+        return check_password(raw_password, self.hashed_password)
+
 
 class storedFile(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)

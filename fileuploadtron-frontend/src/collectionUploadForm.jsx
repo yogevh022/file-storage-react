@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { getFileTypeGroup } from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
+import { useNavigate } from 'react-router-dom';
 
 
 var trayLevelFreezes = {
@@ -14,7 +15,10 @@ function CollectionUploadForm(props) {
     const [collectionVerifyPassword, setCollectionVerifyPassword] = useState('');
     const [currentCollectionImage, setCurrentCollectionImage] = useState(null);
     const collectionImageInputRef = useRef();
+    const navigate = useNavigate();
     
+    const postCollectionUrl = '/api/collections/';
+
     const joinCollectionSubmitTitle = 'Join Collection';
     const createCollectionSubmitTitle = 'Create Collection';
     const collectionTitlePlaceholder = 'Collection Name';
@@ -59,6 +63,15 @@ function CollectionUploadForm(props) {
         props.setMenuClose();
     }
 
+    const joinSuccess = (responseData) => {
+        if (responseData.status === 1) {
+            // user already in collection popup
+            return;
+        }
+        navigate(`/collections/${responseData.id}`);
+        props.setMenuClose();
+    }
+
     useEffect(()=>{
         if (props.trayLevel === 0 && fileInputIsntEmpty()) {
             clearFileInput();
@@ -91,7 +104,33 @@ function CollectionUploadForm(props) {
         setCurrentCollectionImage(selected_file);
     }
 
-    const handleSubmit = (e) => {
+    const handleJoinSubmit = (e) => {
+        e.preventDefault();
+
+        const newCollectionFormData = new FormData();
+        newCollectionFormData.append('name', collectionName);
+        newCollectionFormData.append('password', collectionPassword);
+
+        fetch(postCollectionUrl, {
+            method: 'PUT',
+            'Content-Type': 'multipart/form-data',
+            body: newCollectionFormData
+        })
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            } else {
+                return Promise.reject("not uploaded successfully");
+            }
+        })
+        .then(joinSuccess)
+        .catch(error => {
+            // error indication
+            console.log(error);
+        })
+    }
+
+    const handleCreateSubmit = (e) => {
         e.preventDefault();
 
         const newCollectionFormData = new FormData();
@@ -106,7 +145,7 @@ function CollectionUploadForm(props) {
             newCollectionFormData.append('image', currentCollectionImage);
         }
 
-        fetch(`/api/collections/`, {
+        fetch(postCollectionUrl, {
             method: 'POST',
             'Content-Type': 'multipart/form-data',
             body: newCollectionFormData
@@ -123,6 +162,15 @@ function CollectionUploadForm(props) {
             props.onPostFailure({"title": collectionName, "id": 1});
             console.log("tech error; ", error);
         })
+    }
+
+    const handleSubmit = (e) => {
+        var btn = e.target;
+        if (btn.classList.contains('__create')) {
+            handleCreateSubmit(e);
+        } else if (btn.classList.contains('__join')) {
+            handleJoinSubmit(e);
+        }
     }
 
     const handleJoinCollectionPress = () => {
@@ -200,7 +248,7 @@ function CollectionUploadForm(props) {
             </button>
             <button 
                 type="button"
-                className={`uploadButton uiButton`}
+                className={`uploadButton uiButton ${props.trayLevel === 2 && '__join'} ${props.trayLevel === 3 && '__create'}`}
                 onClick={handleSubmit}
                 // style={{'margin-bottom': 'var(--uipad)'}}
                 >

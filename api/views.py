@@ -130,6 +130,13 @@ def loginView(req):
     return HttpResponse(html)
 
 
+def registerView(req):
+    with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
+        html = f.read()
+    
+    return HttpResponse(html)
+
+
 @api_view(['GET', 'POST'])
 @login_required(redirect_url=None)
 def storedFiles(req, auth_context, collection_id=None):
@@ -180,9 +187,16 @@ def register(req):
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
 
-        CustomUser.objects.create_user(username=username, email=email, password=password)
+        user = CustomUser.objects.create_user(username=username, email=email, password=password)
 
-        return Response(form.data, status=status.HTTP_201_CREATED)
+        jwt_token = get_jwt_token(user.id, **JWTConfig.JWT_EXP)
+        refresh_token = get_jwt_token(user.id, **JWTConfig.REFRESH_TOKEN_EXP)
+
+        response = Response(form.data)
+        response.set_cookie(key='jwt', value=jwt_token, httponly=True)
+        response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+        response.status_code = status.HTTP_201_CREATED
+        return response
     return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -238,7 +252,7 @@ def getUser(req, user_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 @login_required(redirect_url=None)
 def getAllCollections(req, auth_context):
     if req.method == 'GET':
@@ -252,6 +266,8 @@ def getAllCollections(req, auth_context):
         new_collection.users.add(auth_context.user)
         if collection_password := req.data.get('password', None):
             new_collection.set_password(collection_password)
+        if collection_picture := req.data.get('image', None):
+            new_collection.picture = collection_picture
         new_collection.save()
         
         serialized_data = {
@@ -264,6 +280,21 @@ def getAllCollections(req, auth_context):
         response = Response(serialized_data)
         response = refresh_tokens_if_needed(response, auth_context)
         return response
+    elif req.method == 'PUT':
+        collection = get_file_collection(name=req.data['name'])
+        if collection.users.filter(id=auth_context.user.id).exists():
+            return Response({"status": 1, "message": "user already in collection"})
+        if collection.check_password(req.data['password']):
+            collection.users.add(auth_context.user)
+            collection.save()
+            serialized_data = {
+                'id': collection.id,
+                'name': collection.name,
+                "status": 0
+            }
+            return Response(serialized_data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET'])
