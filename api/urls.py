@@ -16,6 +16,7 @@ urlpatterns = [
     path('login/', views.loginView),
     path('register/', views.registerView),
     path('collections/', views.mainView),
+    path('collections/<int:collection_id>/', views.mainView),
     path('test/', views.testv),
     path('', views.mainView),
 ]

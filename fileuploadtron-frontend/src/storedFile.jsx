@@ -54,7 +54,7 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
         }
         if (e.target.classList.contains('downloadBtn')) { // download btn clicked
             var __DEBUG = false;
-            if (!__DEBUG) { window.location.href = getFileUrl(fileId); return; }
+            if (!__DEBUG) { window.location.href = `/api/collections/${collectionId}/files/${fileId}/`; return; }
 
             fetch(`/api/collections/${collectionId}/files/${fileId}/`)
             .then(res => res.blob())

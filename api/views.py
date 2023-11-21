@@ -114,7 +114,7 @@ def logout_required(func):
 
 
 @login_required(redirect_url="/login")
-def mainView(req, auth_context):
+def mainView(req, auth_context, collection_id=None):
     with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
         html = f.read()
 
