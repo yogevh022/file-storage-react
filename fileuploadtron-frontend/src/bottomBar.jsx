@@ -153,6 +153,7 @@ function BottomBar(props) {
                     closeTray={handleMenuClose}
                     onPostResponse={onPostResponseReceivedWrapper}
                     onPostFailure={onPostFailure}
+                    setUploadProgress={props.setUploadProgress}
                 />}
                 { props.formType === 'collection' && 
                 <CollectionUploadForm 

@@ -801,6 +801,94 @@ button {
   background-color: green !important;
 }
 
+.progressContainer {
+  width: min(100%, var(--sfcwidth));
+  height: fit-content;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: var(--uipad);
+  border-radius: var(--uimrad);
+  box-sizing: border-box;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transform: scale(0.85);
+
+  transition: transform .3s, opacity .3s;
+
+  background-color: var(--dk2);
+
+  z-index: 3000;
+}
+.progressContainer.Open {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(0.9);
+}
+
+.progressInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  justify-content: space-around;
+  
+}
+
+.progressBarContainer {
+  display: flex;
+  width: 100%;
+  height: 20px;
+
+  background-color: var(--dk25);
+  border-radius: var(--uirad);
+  overflow: hidden;
+}
+
+.progressBar {
+  /* width: 0%; */
+  height: 100%;
+
+  background-size: 250% 100%;
+  background-image: linear-gradient(35deg, var(--lt_h) 0%, var(--lt_i) 40%, var(--lt_j), var(--lt_k));
+  border-radius: var(--uirad);
+
+  transition: width .3s;
+  
+  overflow: hidden;
+  flex: 0 auto;
+}
+
+.progressUploadAbort {
+  flex: 1;
+  display: none;
+}
+
+.progressContainer span {
+  color: var(--dk4);
+}
+
+.progressTitle {
+  font-size: var(--uifontsize);
+}
+
+.progressPrecent {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+
 
 /* react css transitions */
 

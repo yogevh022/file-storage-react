@@ -1,4 +1,5 @@
 import FilesContainer from './filesContainer';
+import ProgressContainer from "./progressContainer";
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import TopBar from './topBar';
@@ -14,6 +15,18 @@ function MainApp(props) {
     const [lastClipboard, setLastClipboard] = useState(null);
     const [unableClipboard, setUnableClipboard] = useState(false);
     const [isMenuActive, setIsMenuActive] = useState(false);
+    const [isMenuForced, setIsMenuForced] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0.0);
+
+    useEffect(()=>{
+        if (uploadProgress !== 0) {
+            setIsMenuActive(true);
+            setIsMenuForced(true);
+        } else {
+            setIsMenuActive(false);
+            setIsMenuForced(false);
+        }
+    },[uploadProgress]);
 
     const handlePostedDataResponse = (data) => {
         setPostData(data);
@@ -28,7 +41,10 @@ function MainApp(props) {
     }
 
     const setMenuActive = (isActive) =>{
-        setIsMenuActive(isActive);
+        if (isMenuForced === false) {
+            setIsMenuActive(isActive);
+            console.log("fafa");
+        }
     }
 
     return (
@@ -48,8 +64,12 @@ function MainApp(props) {
             onPostResponseReceived={handlePostedDataResponse}
             lastClipboardCopy={lastClipboard}
             setMenuActive={setMenuActive}
+            setUploadProgress={setUploadProgress}
             unableClipboard={unableClipboard}
             formType='file'
+        />
+        <ProgressContainer
+            uploadProgress={uploadProgress}
         />
         </div>
     )

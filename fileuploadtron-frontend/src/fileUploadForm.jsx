@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
 
-function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen }) {
+function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen }) {
     const [title, setTitle] = useState('');
     const [titlePlaceholder, setTitlePlaceholder] = useState('');
     const [expiresInDays, setExpiresInDays] = useState(1);
@@ -80,24 +80,52 @@ function FileUploadForm({ formId, currentUser, collectionId, onPostResponse, onP
         newFileFormData.append('fileSize', fileSize);
         newFileFormData.append('expiresInDays', expiresInDays);
 
-        fetch(`/api/collections/${collectionId}/files/`, {
-            method: 'POST',
-            'Content-Type': 'multipart/form-data',
-            body: newFileFormData
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
-            } else {
-                return Promise.reject("not uploaded successfully");
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const precentComplete = (e.loaded / e.total) * 100;
+                setUploadProgress(precentComplete);
             }
         })
-        .then(uploadSuccess)
-        .catch(error => {
-            onPostFailure({"title": generatedFileTitle, "id": 1});
-            setTitle('');
-            console.log("tech error; ", error);
-        })
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                uploadSuccess(JSON.parse(xhr.responseText));
+            } else {
+                onPostFailure({"title": generatedFileTitle, "id": 1});
+                setTitle('');
+                console.log("tech error; ", xhr.statusText);
+            }
+            setUploadProgress(0.0);
+        }
+
+        xhr.onerror = function() {
+            console.error("network error during upload (xhr)");
+            setUploadProgress(0.0);
+        }
+
+        xhr.open('POST', `/api/collections/${collectionId}/files/`, true);
+        xhr.send(newFileFormData);
+
+        // fetch(`/api/collections/${collectionId}/files/`, {
+        //     method: 'POST',
+        //     'Content-Type': 'multipart/form-data',
+        //     body: newFileFormData
+        // })
+        // .then((res) => {
+        //     if (res.ok) {
+        //         return res.json();
+        //     } else {
+        //         return Promise.reject("not uploaded successfully");
+        //     }
+        // })
+        // .then(uploadSuccess)
+        // .catch(error => {
+        //     onPostFailure({"title": generatedFileTitle, "id": 1});
+        //     setTitle('');
+        //     console.log("tech error; ", error);
+        // })
     }
 
     return (
