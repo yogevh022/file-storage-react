@@ -19,14 +19,14 @@ function MainApp(props) {
     const [uploadProgress, setUploadProgress] = useState(0.0);
 
     useEffect(()=>{
-        if (uploadProgress !== 0) {
+        if (uploadProgress > 0) {
             setIsMenuActive(true);
             setIsMenuForced(true);
         } else {
             setIsMenuActive(false);
             setIsMenuForced(false);
         }
-    },[uploadProgress]);
+    }, [uploadProgress]);
 
     const handlePostedDataResponse = (data) => {
         setPostData(data);
@@ -41,15 +41,15 @@ function MainApp(props) {
     }
 
     const setMenuActive = (isActive) =>{
-        if (isMenuForced === false) {
-            setIsMenuActive(isActive);
-            console.log("fafa");
-        }
+        setIsMenuActive(isActive);
     }
 
     return (
         <div className='globalContainer'>
-        <Darkscreen isActive={isMenuActive}/>
+        <Darkscreen
+            isActive={isMenuActive}
+            isMenuForced={isMenuForced}
+        />
         <TopBar selectedFileCollection={fileCollection} currentUser={currentUser}/>
         <FilesContainer
             collectionId={collectionId}

@@ -70,6 +70,9 @@ class FileCollection(models.Model):
     
     def check_password(self, raw_password):
         return check_password(raw_password, self.hashed_password)
+    
+    def __str__(self):
+        return self.name
 
 
 class storedFile(models.Model):
@@ -86,3 +89,5 @@ class storedFile(models.Model):
             self.fileData.delete(save=False)
         super().delete(*args, **kwargs)
 
+    def __str__(self):
+        return self.title

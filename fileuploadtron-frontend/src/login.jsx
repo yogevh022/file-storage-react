@@ -32,20 +32,24 @@ function Login() {
         })
     }
 
-    const handleLogout = (e) => {
-        e.preventDefault();
-
-        var api_logout_url = '/api/logout/';
-        
-        fetch(api_logout_url, {
-            method: 'POST'
-        })
-        .then(res=>{
-            if (res.ok) {
-                console.log("logged out !");
-            }
-        })
+    const handleRegister = (e) => {
+        window.location.href = '/register';
     }
+
+    // const handleLogout = (e) => {
+    //     e.preventDefault();
+
+    //     var api_logout_url = '/api/logout/';
+        
+    //     fetch(api_logout_url, {
+    //         method: 'POST'
+    //     })
+    //     .then(res=>{
+    //         if (res.ok) {
+    //             console.log("logged out !");
+    //         }
+    //     })
+    // }
 
     return (
         <div className='tempLogin'>
@@ -70,7 +74,7 @@ function Login() {
                     <label>password</label>
                 </div>
                 <button type='submit'>LOG IN</button>
-                <button type='button' onClick={handleLogout}>LOG OUT</button>
+                <button type='button' onClick={handleRegister}>GO TO REGISTER PAGE</button>
             </form>
         </div>
     )

@@ -29,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:80",
     "http://localhost:8000",
     "http://localhost:3000",
     "http://192.168.50.214:8000",
@@ -37,6 +38,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000/",
+    "http://localhost:80/",
     "http://localhost:3000/",
     "http://192.168.50.214:8000/",
     "http://192.168.50.214:3000/",

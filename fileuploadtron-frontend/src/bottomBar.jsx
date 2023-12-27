@@ -149,7 +149,7 @@ function BottomBar(props) {
                     currentUser={props.currentUser}
                     collectionId={props.collectionId}
                     trayOpen={trayOpen}
-                    setTrayOpen={setTrayOpen}
+                    setTrayOpen={handleMenuOpen}
                     closeTray={handleMenuClose}
                     onPostResponse={onPostResponseReceivedWrapper}
                     onPostFailure={onPostFailure}

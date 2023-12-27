@@ -4,20 +4,28 @@ import { Navigate } from 'react-router-dom';
 function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        var api_login_url = '/api/register/';
-        const loginFormData = new FormData();
-        loginFormData.append('username', username);
-        loginFormData.append('password', password);
-        loginFormData.append('email', 'www@www.www');
+        if (password != confirmPassword) {
+            setPassword('');
+            setConfirmPassword('');
+            console.log("passwords dont match");
+            return;
+        }
 
-        fetch(api_login_url, {
+        var api_register_url = '/api/register/';
+        const registerFormData = new FormData();
+        registerFormData.append('username', username);
+        registerFormData.append('password', password);
+        registerFormData.append('email', 'www@www.www');
+
+        fetch(api_register_url, {
             method: 'POST',
             'Content-Type': 'application/json',
-            body: loginFormData
+            body: registerFormData
         })
         .then((res) => {
             if (res.ok) {
@@ -28,6 +36,11 @@ function Register() {
         .catch(error => {
             console.log("tech error; ", error);
         })
+
+    }
+
+    const handleLogin = (e) => {
+        window.location.href = '/login';
     }
 
     return (
@@ -50,8 +63,18 @@ function Register() {
                         required
                     />
                     <label>password</label>
+                <div>
+                    <input
+                        type='password'
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        required
+                    />
+                    <label>confirm password</label>
+                </div>
                 </div>
                 <button type='submit'>REGISTER</button>
+                <button type='button' onClick={handleLogin}>GO TO LOGIN PAGE</button>
             </form>
         </div>
     )

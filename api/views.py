@@ -15,6 +15,10 @@ import jwt
 import os
 import datetime
 
+index_html_path = "fileuploadtron-frontend/build/index.html"
+if settings.DEBUG == True:
+    index_html_path = "fileuploadtron-frontend/public/index.html"
+
 
 class AuthContext:
     user = None
@@ -115,7 +119,7 @@ def logout_required(func):
 
 @login_required(redirect_url="/login")
 def mainView(req, auth_context, collection_id=None):
-    with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
+    with open(os.path.join(settings.BASE_DIR, index_html_path), 'r') as f:
         html = f.read()
 
     response = HttpResponse(html)
@@ -124,14 +128,14 @@ def mainView(req, auth_context, collection_id=None):
 
 
 def loginView(req):
-    with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
+    with open(os.path.join(settings.BASE_DIR, index_html_path), 'r') as f:
         html = f.read()
     
     return HttpResponse(html)
 
 
 def registerView(req):
-    with open(os.path.join(settings.BASE_DIR, 'fileuploadtron-frontend/build/index.html'), 'r') as f:
+    with open(os.path.join(settings.BASE_DIR, index_html_path), 'r') as f:
         html = f.read()
     
     return HttpResponse(html)

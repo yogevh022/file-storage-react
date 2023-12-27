@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useFetch from './useFetch';
 import TopBar from './topBar';
 import BottomBar from './bottomBar';
@@ -11,8 +11,20 @@ function Collections() {
     const [postData, setPostData] = useState(null);
     const [lastClipboard, setLastClipboard] = useState(null);
     const [isMenuActive, setIsMenuActive] = useState(false);
+    const [isMenuForced, setIsMenuForced] = useState(false);
     const [unableClipboard, setUnableClipboard] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0.0);
     const [isOpenNewCollection, setIsOpenNewCollection] = useState(false);
+
+    useEffect(()=>{
+        if (uploadProgress > 0) {
+            setIsMenuActive(true);
+            setIsMenuForced(true);
+        } else {
+            setIsMenuActive(false);
+            setIsMenuForced(false);
+        }
+    }, [uploadProgress]);
 
     const openNewCollection = () => {
         setIsOpenNewCollection(isOpenNewCollection=>{return !isOpenNewCollection});
@@ -23,13 +35,18 @@ function Collections() {
     }
 
     const setMenuActive = (isActive) =>{
-        setIsMenuActive(isActive);
+        if (isMenuForced === false) {
+            setIsMenuActive(isActive);
+        }
     }
 
     return (
         <div className='globalContainer'>
             { !currentUser && !isLoadingUser && <Navigate to="/login"/>}
-            <Darkscreen isActive={isMenuActive}/>
+            <Darkscreen
+                isActive={isMenuActive}
+                isMenuForced={isMenuForced}
+            />
             <TopBar currentUser={currentUser} />
             <CollectionsContainer currentUser={currentUser} openNewCollection={openNewCollection} postData={postData} />
             <BottomBar

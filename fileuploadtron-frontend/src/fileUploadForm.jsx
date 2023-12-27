@@ -7,6 +7,7 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
     const [expiresInDays, setExpiresInDays] = useState(1);
     const [currentFile, setCurrentFile] = useState(null);
     const [fileSize, setFileSIze] = useState(0);
+    const [isUploadButtonActive, setIsUploadButtonActive] = useState(true);
     const fileInputRef = useRef();
     const formRef = useRef();
 
@@ -80,12 +81,13 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
         newFileFormData.append('fileSize', fileSize);
         newFileFormData.append('expiresInDays', expiresInDays);
 
+        setIsUploadButtonActive(false);
         const xhr = new XMLHttpRequest();
 
         xhr.upload.addEventListener('progress', function(e) {
             if (e.lengthComputable) {
                 const precentComplete = (e.loaded / e.total) * 100;
-                setUploadProgress(precentComplete);
+                setUploadProgress(Math.max(0.001, precentComplete));
             }
         })
 
@@ -98,41 +100,25 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                 console.log("tech error; ", xhr.statusText);
             }
             setUploadProgress(0.0);
+            setIsUploadButtonActive(true);
         }
 
         xhr.onerror = function() {
             console.error("network error during upload (xhr)");
             setUploadProgress(0.0);
+            setIsUploadButtonActive(true);
         }
 
         xhr.open('POST', `/api/collections/${collectionId}/files/`, true);
         xhr.send(newFileFormData);
-
-        // fetch(`/api/collections/${collectionId}/files/`, {
-        //     method: 'POST',
-        //     'Content-Type': 'multipart/form-data',
-        //     body: newFileFormData
-        // })
-        // .then((res) => {
-        //     if (res.ok) {
-        //         return res.json();
-        //     } else {
-        //         return Promise.reject("not uploaded successfully");
-        //     }
-        // })
-        // .then(uploadSuccess)
-        // .catch(error => {
-        //     onPostFailure({"title": generatedFileTitle, "id": 1});
-        //     setTitle('');
-        //     console.log("tech error; ", error);
-        // })
     }
 
     return (
         <form id={formId} className="uploadForm" ref={formRef}/* onSubmit={handleSubmit}*/ encType="multipart/form-data">
             <button 
             type="button"
-            className={`uploadButton ${trayOpen !== 0 ? 'uploadButtonOpen' : ''}`}
+            className={`uploadButton ${trayOpen !== 0 ? 'uploadButtonOpen' : ''} ${isUploadButtonActive === true ? '' : 'disabled'}`}
+            disabled={!isUploadButtonActive}
             onClick={handleExternalInputButtonClick}>
                 <object 
                 aria-label="+"

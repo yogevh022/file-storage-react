@@ -100,7 +100,7 @@
     filter: brightness(1);
   }
 
-  .uploadButton:not(.uploadButtonOpen):hover {
+  .uploadButton:not(.uploadButtonOpen):not(.disabled):hover {
     /* background: linear-gradient(215deg, var(--lt_2), var(--lt_3)); */
     background-position: 100% 0;
     box-shadow: 0 0 5px 1px var(--lt_d);
@@ -180,7 +180,7 @@ button {
   top: 0;
   left: 0;
 
-  background-color: var(--dk1);
+  background-color: var(--dk05);
   opacity: 0;
 
   transition: opacity .3s;
@@ -306,7 +306,7 @@ button {
   top: 0;
   width: 100%;
   border-radius: 40px 40px 0px 0px;
-  height: calc(var(--barheight) * 3);
+  height: calc(var(--barheight) * 4);
 
   background-color: transparent;
 
@@ -574,7 +574,7 @@ button {
   background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
   box-shadow: 0 0 10px 2px transparent;
 
-  transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out;
+  transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out, opacity var(--btnanimlen) ease-in-out;
 }
 .uploadButton > .uploadImg {
   transition: filter 0.2s;
@@ -588,6 +588,11 @@ button {
 }
 .uploadButtonOpen > .uploadImg {
   filter: brightness(0.75) drop-shadow(0px 0px 3px rgba(0,0,0,0.5)) !important;
+}
+
+.uploadButton.disabled {
+  opacity: 0.1 !important;
+  cursor: default;
 }
 
 .uploadImg {
@@ -864,7 +869,7 @@ button {
   background-image: linear-gradient(35deg, var(--lt_h) 0%, var(--lt_i) 40%, var(--lt_j), var(--lt_k));
   border-radius: var(--uirad);
 
-  transition: width .3s;
+  transition: width .5s;
   
   overflow: hidden;
   flex: 0 auto;
