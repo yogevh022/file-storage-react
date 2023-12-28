@@ -117,6 +117,23 @@ DATABASES = {
     }
 }
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'logs/debug.log',
+#         },
+#     },
+#     'loggers': {
+#         '': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -153,6 +170,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'fileuploadtron-frontend/static_root/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'fileuploadtron-frontend/media_root/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 function Register() {
+    const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,7 +21,7 @@ function Register() {
         const registerFormData = new FormData();
         registerFormData.append('username', username);
         registerFormData.append('password', password);
-        registerFormData.append('email', 'www@www.www');
+        registerFormData.append('email', email);
 
         fetch(api_register_url, {
             method: 'POST',
@@ -46,6 +47,15 @@ function Register() {
     return (
         <div className='tempLogin tempReg'>
             <form onSubmit={handleSubmit}>
+                <div>
+                    <input
+                        type='text'
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                    />
+                    <label>email</label>
+                </div>
                 <div>
                     <input
                         type='text'
