@@ -1,5 +1,6 @@
 /stored_files/*
 /collection_pictures/*
+/fileuploadtron-frontend/media_root/*
 /fileuploadtron-frontend/media_root/stored_files/*
 /fileuploadtron-frontend/media_root/collection_pictures/*
 
