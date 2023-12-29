@@ -1,6 +1,6 @@
 import useFetch from "./useFetch";
 import StoredFile from './storedFile';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import getFileTypeIcon from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
 
@@ -8,6 +8,7 @@ function FilesContainer(props) {
     const {data: filesData, isLoading} = useFetch(`/api/collections/${props.collectionId}/files/`);
     const [displayData, setDisplayData] = useState(null);
     const alreadyAnimated = new Set();
+    const childRefs = useRef([]);
 
 
     const checkIfItemIsNewlyCreated = (item) => {
@@ -23,6 +24,30 @@ function FilesContainer(props) {
         }
         return false;
     }
+
+    const handleCopy = () => {
+        childRefs.current.forEach((childRef) => {
+            if (childRef) {
+                childRef.handleCopyEvent();
+            }
+        });
+    }
+    const handleClickAnywhere = (e) => {
+        childRefs.current.forEach((childRef) => {
+            if (childRef) {
+                childRef.handleClickAnywhere(e.target);
+            }
+        });
+    }
+
+    useEffect(()=>{
+        document.addEventListener("click", handleClickAnywhere);
+        document.addEventListener("copy", handleCopy);
+        return () => {
+            document.removeEventListener("click", handleClickAnywhere);
+            document.removeEventListener("copy", handleCopy);
+        }
+    }, []);
 
     useEffect(() => {
         setDisplayData(filesData);
@@ -40,6 +65,7 @@ function FilesContainer(props) {
         {/* { postDataResponse && getNewItemJsx(postDataResponse) } */}
         { displayData && displayData.toReversed().map((item, index) => (
             <StoredFile
+            ref={(ref)=>{childRefs.current[index] = ref}}
             key={item['id']}
             fileId={item['id']}
             collectionId={props.collectionId}

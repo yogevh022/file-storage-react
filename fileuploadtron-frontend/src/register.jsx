@@ -45,7 +45,7 @@ function Register() {
     }
 
     return (
-        <div className='tempLogin tempReg'>
+        <div className='tempLogin tempReg' style={{"height": "150px"}}>
             <form onSubmit={handleSubmit}>
                 <div>
                     <input

@@ -1,8 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import CopyTextWindow from './copyTextWindow';
+import StoredFileInfo from './storedFileInfo';
 
-function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}) {
+const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}, ref) => {
     const sfcRef = useRef(null);
     const [animClass, setAnimClass] = useState("");
+    const [isCopyWindowActive, setIsCopyWindowActive] = useState(false);
+    const [copyLink, setCopyLink] = useState('');
 
     const copyClipboardIcon = `${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`;
     const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download.svg`;
@@ -20,11 +24,8 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
     }, [isNewlyCreated]);
     
     const getFileUrl = (_fileId) => {
-        var currentUrl = window.location.href;
-        if (currentUrl.endsWith('/')) {
-            currentUrl = currentUrl.slice(0, -1);
-        }
-        return `${currentUrl}/api/collections/${collectionId}/files/${_fileId}/`;
+        var coreUrl = window.location.protocol + '//' + window.location.host;
+        return `${coreUrl}/api/collections/${collectionId}/files/${_fileId}/`;
     }
 
     const copyToClipboard = (text) => {
@@ -42,14 +43,47 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
                 console.log("share ERR; ", err);
             });
         } else {
-            onUnableCopyClipboard();
+            setCopyLink(text);
+            setIsCopyWindowActive(true);
+            // onUnableCopyClipboard();
         }
     }
+
+    const getSelectedText = () => {
+        if (window.getSelection) {
+            return window.getSelection().toString();
+        } else if (document.selection && document.selection.type !== "Control") {
+            return document.selection.createRange().text;
+        }
+        return "";
+    }
+
+    const handleCopyEvent = () => {
+        if (getSelectedText() == copyLink) {
+            onCopyClipboard({"title": title, "id": fileId});
+        }
+        setTimeout(()=>setIsCopyWindowActive(false), 50);
+    }
+
+    const handleClickAnywhere = (target) => {
+        if (sfcRef.current.contains(target) === false && isCopyWindowActive === true) {
+            setIsCopyWindowActive(false);
+        }
+    }
+
+    useImperativeHandle(ref, ()=>({
+        handleCopyEvent,
+        handleClickAnywhere,
+    }));
 
     const handleClick = (e) => {
         e.preventDefault();
         if (e.target.classList.contains('shareBtn')) { // share btn clicked
-            copyToClipboard(getFileUrl(fileId));
+            if (isCopyWindowActive === true) {
+                setIsCopyWindowActive(false);
+            } else {
+                copyToClipboard(getFileUrl(fileId));
+            }
             return;
         }
         if (e.target.classList.contains('downloadBtn')) { // download btn clicked
@@ -114,12 +148,20 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
         <div ref={sfcRef} className={`storedFileContainer ${animClass}`} onClick={handleClick}>
             <img className='fileImg' src={displayIcon} alt="no img"/>
             <div className='storedFileInfoContainer'>
-                <div className='sfTitle'>{title}</div>
-                <div className='sfInfoContainer'>
-                    <span className='sfUploader'>{user ? user.username : 'unknown'}</span>
-                    <div className='sfSize'>{fileSizeNum}{fileSizeUnit}</div>
-                </div>
-                {/* <span>{fileData}</span> */}
+                { isCopyWindowActive === false && 
+                    <StoredFileInfo
+                        title={title}
+                        user={user}
+                        fileSizeNum={fileSizeNum}
+                        fileSizeUnit={fileSizeUnit}
+                        isInitial={copyLink === '' ? true : false}
+                    />
+                }
+                { isCopyWindowActive === true &&
+                    <CopyTextWindow
+                        link={copyLink}
+                    />
+                }
                 {/* <span>{expirationDateTime}</span> */}
             </div>
             <div className='downloadBtn sfBtnContainer'>
@@ -130,6 +172,6 @@ function StoredFile({fileId, user, collectionId, onUnableCopyClipboard,onCopyCli
             </div>
         </div>
     )
-}
+});
 
 export default StoredFile;
