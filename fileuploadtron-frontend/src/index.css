@@ -670,6 +670,7 @@ button {
 
   overflow-y: scroll;
   overflow-x: visible;
+  scrollbar-width: none;
 }
 
 .filesContainer::-webkit-scrollbar {
