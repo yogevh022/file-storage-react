@@ -10,6 +10,7 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
 
     const copyClipboardIcon = `${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`;
     const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download.svg`;
+    const closeIcon = `${process.env.REACT_APP_STATIC_URL}cancel.svg`;
 
     const removeAnimationClassAndListener = () => {
         setAnimClass('');
@@ -168,7 +169,7 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
                 <img className='sfDlBtn sfBtn' src={downloadIcon} alt="V"/>
             </div>
             <div className='shareBtn sfBtnContainer'>
-                <img className='sfShrBtn sfBtn' src={copyClipboardIcon} alt="S"/>
+                <img className='sfShrBtn sfBtn' src={isCopyWindowActive === true ? closeIcon : copyClipboardIcon} alt="S"/>
             </div>
         </div>
     )
