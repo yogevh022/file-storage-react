@@ -206,6 +206,7 @@ function CollectionUploadForm(props) {
                 placeholder={collectionTitlePlaceholder}
                 onChange={e=>setCollectionName(e.target.value)}
                 value={collectionName}
+                spellCheck={false}
             />
             <input
                 // ref={fileInputRef}

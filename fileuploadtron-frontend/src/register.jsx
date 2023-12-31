@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import FormInput from './formInput';
 
 function Register() {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const emailIcon = `${process.env.REACT_APP_STATIC_URL}mail.svg`;
+    const usernameIcon = `${process.env.REACT_APP_STATIC_URL}person.svg`;
+    const passwordIcon = `${process.env.REACT_APP_STATIC_URL}lock.svg`;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -45,48 +50,70 @@ function Register() {
     }
 
     return (
-        <div className='tempLogin tempReg' style={{"height": "150px"}}>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input
-                        type='text'
+        <div className='globalContainer'>
+            <div className='loginContainer'>
+                <form className='credForm' onSubmit={handleSubmit}>
+                    <div className='temp regtemp'>FileUploadinator</div>
+                    <FormInput
+                        icon={emailIcon}
+                        title='EMAIL'
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        setValue={setEmail}
                         required
                     />
-                    <label>email</label>
-                </div>
-                <div>
-                    <input
-                        type='text'
+                    <FormInput
+                        icon={usernameIcon}
+                        title='USERNAME'
                         value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        setValue={setUsername}
                         required
                     />
-                    <label>username</label>
-                </div>
-                <div>
-                    <input
-                        type='password'
+                    <FormInput
+                        icon={passwordIcon}
+                        title='PASSWORD'
                         value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        setValue={setPassword}
+                        isPassword={true}
                         required
                     />
-                    <label>password</label>
-                <div>
-                    <input
-                        type='password'
+                    <FormInput
+                        icon={passwordIcon}
+                        title='CONFIRM PASSWORD'
                         value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
+                        setValue={setConfirmPassword}
+                        isPassword={true}
                         required
                     />
-                    <label>confirm password</label>
-                </div>
-                </div>
-                <button type='submit'>REGISTER</button>
-                <button type='button' onClick={handleLogin}>GO TO LOGIN PAGE</button>
-            </form>
+                    <button className='loginButton registerButton' type='submit'>Register</button>
+                    <button className='goToLogin' type='button' onClick={handleLogin}>Login</button>
+                </form>
+            </div>
         </div>
+
+        // <div className='tempLogin tempReg' style={{"height": "150px"}}>
+        //     <form onSubmit={handleSubmit}>
+        //         <div>
+        //             <input
+        //                 type='password'
+        //                 value={password}
+        //                 onChange={e => setPassword(e.target.value)}
+        //                 required
+        //             />
+        //             <label>password</label>
+        //         <div>
+        //             <input
+        //                 type='password'
+        //                 value={confirmPassword}
+        //                 onChange={e => setConfirmPassword(e.target.value)}
+        //                 required
+        //             />
+        //             <label>confirm password</label>
+        //         </div>
+        //         </div>
+        //         <button type='submit'>REGISTER</button>
+        //         <button type='button' onClick={handleLogin}>GO TO LOGIN PAGE</button>
+        //     </form>
+        // </div>
     )
 }
 

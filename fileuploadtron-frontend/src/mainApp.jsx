@@ -53,6 +53,7 @@ function MainApp(props) {
         <TopBar selectedFileCollection={fileCollection} currentUser={currentUser}/>
         <FilesContainer
             collectionId={collectionId}
+            collectionData={fileCollection}
             postDataResponse={postData}
             setPostDataResponse={setPostData}
             onCopyClipboard={handleCopyClipboard}

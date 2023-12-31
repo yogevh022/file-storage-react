@@ -220,3 +220,29 @@
     max-height: 23px;
     pointer-events: none;
 }
+
+.emptyCollectionContainer {
+    position: absolute;
+    top: 45%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 24px;
+    font-weight: 600;
+
+    color: var(--dk25);
+}
+
+.messageLink {
+    font-size: 16px;
+    /* color: lightskyblue; */
+    cursor: pointer;
+
+    background-size: 250% 100%;
+    background-image: linear-gradient(35deg, var(--lt_h)0%, var(--lt_i)40%, var(--lt_j), var(--lt_k));
+    background-clip: text;
+    color: transparent;
+}

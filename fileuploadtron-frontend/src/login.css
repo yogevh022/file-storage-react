@@ -1,0 +1,213 @@
+:root {
+    --formTextAnimLen: .25s;
+    --loginrad: 20px;
+    --loginContainerColor: #161a2d;
+}
+
+@media (hover:hover) {
+    .loginButton:hover {
+        background-position: 100% 0;
+        box-shadow: 0 0 5px 1px var(--lt_d);
+    }
+    .loginButton.registerButton:hover {
+        box-shadow: 0 0 5px 1px var(--lt_i) !important;
+    }
+}
+
+.loginContainer {
+    width: min(100%, 400px);
+    height: fit-content;
+    background-color: var(--loginContainerColor);
+
+    border-radius: var(--loginrad);
+
+    padding: var(--uipad);
+    box-sizing: border-box;
+
+    position: fixed;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    margin: auto;
+}
+
+.formTextInputContainer {
+    width: 100%;
+    height: 60px;
+    background-color: var(--loginContainerColor);
+    border-radius: var(--loginrad);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    overflow: hidden;
+
+    cursor: text;
+
+    transition: background-color var(--formTextAnimLen);
+}
+.formTextInputContainer.active {
+    background-color: var(--dk1) !important;
+}
+
+.formTextIcon {
+    left: 0;
+    width: 12px;
+    padding-left: 20px;
+    padding-right: 15px;
+
+    filter: brightness(0.8);
+    transition: filter, var(--formTextAnimLen);
+
+    flex: 0 0;
+}
+.formTextIcon.active {
+    filter: brightness(1);
+}
+
+.formTextInputSection {
+    flex: 1 auto;
+    height: 100%;
+    overflow: hidden;
+}
+
+.formTextInputTitle {
+    width: fit-content;
+    user-select: none;
+    position: relative;
+
+    color: var(--dk34);
+    filter: brightness(0.8);
+
+    letter-spacing: 1px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 17px;
+    font-weight: 400;
+
+    top: 50%;
+    transform: translateY(-50%) scale(1);
+    transform-origin: left;
+
+    transition: transform var(--formTextAnimLen), filter var(--formTextAnimLen);
+}
+.formTextInputTitle.active {
+    transform: translateY(-120%) scale(0.65) !important;
+    filter: brightness(1);
+}
+
+.formTextInputField {
+    top: 50%;
+    transform: translateY(40%);
+    transform-origin: left;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    opacity: 0;
+    pointer-events: none;
+
+    font-family: 'Roboto Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dk35);
+
+    background: transparent;
+    outline: none;
+    border: none;
+
+    transition: opacity var(--formTextAnimLen), transform var(--formTextAnimLen);
+}
+.formTextInputField.active {
+    opacity: 1 !important;
+    transform: translateY(10%) !important;
+    pointer-events: all;
+}
+.formTextInputField.password {
+    width: 66.6%;
+    transform: translateY(40%) scale(1.5);
+}
+.formTextInputField.password.active {
+    transform: translateY(10%) scale(1.5) !important;
+}
+
+.formTextInputField.password {
+    font-family: sans-serif !important;
+}
+
+
+.credForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.loginButton {
+    font-size: 17px;
+    width: 200px;
+    height: 60px;
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+
+    color: white;
+    font-weight: 600;
+    border-radius: var(--loginrad);
+    text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
+
+    background-size: 250% 100%;
+    background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
+
+    transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out, opacity var(--btnanimlen) ease-in-out;
+}
+.loginButton.registerButton {
+    background-image: linear-gradient(35deg, var(--lt_h) 0%, var(--lt_i) 40%, var(--lt_j), var(--lt_k)) !important;
+}
+
+.goToRegister {
+    background-size: 250% 100%;
+    background-image: linear-gradient(35deg, var(--lt_h) 0%, var(--lt_i) 40%, var(--lt_j), var(--lt_k));
+    background-clip: text;
+    color: transparent;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    border:none;
+    outline: none;
+}
+
+.goToLogin {
+    background-size: 250% 100%;
+    background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
+    background-clip: text;
+    color: transparent;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    border:none;
+    outline: none;
+}
+
+.temp {
+    background-size: 250% 100%;
+    background-image: linear-gradient(35deg, var(--lt_d)0%, var(--lt_e)40%, var(--lt_f), var(--lt_g));
+    background-clip: text;
+    color: transparent;
+
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+
+    width: 250px;
+}
+
+.temp.regtemp {
+    background-image: linear-gradient(35deg, var(--lt_h) 0%, var(--lt_i) 40%, var(--lt_j), var(--lt_k)) !important;
+}

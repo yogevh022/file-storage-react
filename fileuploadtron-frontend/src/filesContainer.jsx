@@ -3,6 +3,8 @@ import StoredFile from './storedFile';
 import React, { useEffect, useState, useRef } from 'react';
 import getFileTypeIcon from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
+import LoadingCircle from "./loadingCircle";
+import EmptyCollection from "./emptyCollection";
 
 function FilesContainer(props) {
     const {data: filesData, isLoading} = useFetch(`/api/collections/${props.collectionId}/files/`);
@@ -61,7 +63,8 @@ function FilesContainer(props) {
 
     return (
     <div className='filesContainer'>
-        { isLoading && <h2>Loading...</h2> }
+        { isLoading && <LoadingCircle/> }
+        { displayData && displayData.length === 0 && <EmptyCollection collectionName={props.collectionData && props.collectionData.name}/> }
         {/* { postDataResponse && getNewItemJsx(postDataResponse) } */}
         { displayData && displayData.toReversed().map((item, index) => (
             <StoredFile

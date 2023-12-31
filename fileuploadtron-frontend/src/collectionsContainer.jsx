@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useFetch from './useFetch';
 import Collection from "./collection";
-import CollectionDisplay from './collectionDisplay';
+import LoadingCircle from './loadingCircle';
 
 
 function CollectionsContainer(props) {
@@ -51,7 +51,7 @@ function CollectionsContainer(props) {
 
     return (
         <div className='collectionsContainer'>
-            { isLoadingCollectionsData && <h2>LOADING COLLECTIONS</h2>}
+            { isLoadingCollectionsData && <LoadingCircle/>}
             { props.currentUser && displayCollections && displayCollections.map((item, index) => (
                 <Collection 
                     key={item['id']}

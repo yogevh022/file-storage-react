@@ -10,6 +10,7 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
     const [isUploadButtonActive, setIsUploadButtonActive] = useState(true);
     const fileInputRef = useRef();
     const formRef = useRef();
+    const submitButtonRef = useRef();
 
     const cloudUploadIcon = `${process.env.REACT_APP_STATIC_URL}cloud_upload.svg`;
     const attachFileIcon = `${process.env.REACT_APP_STATIC_URL}attach_file.svg`;
@@ -17,6 +18,21 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
     const uploadButtonLabel = "Select File";
     const reuploadButtonLabel = "Reselect File";
     const submitButtonLabel = "Upload";
+
+    const submitEnterListener = (e) => {
+        if (e.key === 'Enter') {
+            if (fileInputIsntEmpty()) {
+                submitButtonRef.current.click();
+            }
+        }
+    }
+
+    useEffect(()=>{
+        document.addEventListener('keydown', submitEnterListener);
+        return () => {
+            document.removeEventListener('keydown', submitEnterListener);
+        }
+    },[]);
 
     const fileInputIsntEmpty = () => {
         if (fileInputRef.current) {
@@ -142,6 +158,7 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                     value={title}
                     placeholder={titlePlaceholder}
                     onChange={e => setTitle(e.target.value)}
+                    spellCheck={false}
                 />
                 <select className="expireSelect"
                     value={expiresInDays}
@@ -152,7 +169,7 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                     <option value={30}>30 Days</option>
                 </select>
             </div>
-            <button form={formId} className="submitButton" onClick={handleSubmit} type="button" /*type="submit"*/>
+            <button ref={submitButtonRef} form={formId} className="submitButton" onClick={handleSubmit} type="button" /*type="submit"*/>
             <object 
                 className="submitImg"
                 data={cloudUploadIcon}

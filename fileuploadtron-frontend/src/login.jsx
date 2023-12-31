@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useFetch from './useFetch';
 import { Navigate } from 'react-router-dom';
+import FormInput from './formInput';
 
 function Login() {
     const { data: currentUser, isLoading: isLoadingUser } = useFetch("/api/current_user/");
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const usernameIcon = `${process.env.REACT_APP_STATIC_URL}person.svg`;
+    const passwordIcon = `${process.env.REACT_APP_STATIC_URL}lock.svg`;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,46 +40,31 @@ function Login() {
         window.location.href = '/register';
     }
 
-    // const handleLogout = (e) => {
-    //     e.preventDefault();
-
-    //     var api_logout_url = '/api/logout/';
-        
-    //     fetch(api_logout_url, {
-    //         method: 'POST'
-    //     })
-    //     .then(res=>{
-    //         if (res.ok) {
-    //             console.log("logged out !");
-    //         }
-    //     })
-    // }
-
     return (
-        <div className='tempLogin'>
-            { currentUser && <Navigate to="/collections/"/>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input
-                        type='text'
+        <div className='globalContainer'>
+            <div className='loginContainer'>
+                { currentUser && <Navigate to="/collections/"/>}
+                <form className='credForm' onSubmit={handleSubmit}>
+                    <div className='temp'>FileUploadinator</div>
+                    <FormInput
+                        icon={usernameIcon}
+                        title='USERNAME'
                         value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        setValue={setUsername}
                         required
                     />
-                    <label>username</label>
-                </div>
-                <div>
-                    <input
-                        type='password'
+                    <FormInput
+                        icon={passwordIcon}
+                        title='PASSWORD'
                         value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        setValue={setPassword}
+                        isPassword={true}
                         required
                     />
-                    <label>password</label>
-                </div>
-                <button type='submit'>LOG IN</button>
-                <button type='button' onClick={handleRegister}>GO TO REGISTER PAGE</button>
-            </form>
+                    <button className='loginButton' type='submit'>Login</button>
+                    <button className='goToRegister' type='button' onClick={handleRegister}>Register</button>
+                </form>
+            </div>
         </div>
     )
 }
