@@ -1,19 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 import getFileExtension from "./getFileExtension";
+import FormInput from './formInput';
+import ReselectFileButton from "./reselectFileButton";
 
-function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen }) {
+function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dragContainerUiRef,setMenuActive, collectionId, setUploadProgress, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen, setTrayOpenPreview }) {
     const [title, setTitle] = useState('');
-    const [titlePlaceholder, setTitlePlaceholder] = useState('');
+    const [titlePlaceholder, setTitlePlaceholder] = useState('_'); // has to be not empty before initial set
     const [expiresInDays, setExpiresInDays] = useState(1);
     const [currentFile, setCurrentFile] = useState(null);
     const [fileSize, setFileSIze] = useState(0);
     const [isUploadButtonActive, setIsUploadButtonActive] = useState(true);
+    const [isDraggingFile, setIsDraggingFile] = useState(false);
     const fileInputRef = useRef();
     const formRef = useRef();
     const submitButtonRef = useRef();
+    const fileNameInputRef = useRef();
 
     const cloudUploadIcon = `${process.env.REACT_APP_STATIC_URL}cloud_upload.svg`;
     const attachFileIcon = `${process.env.REACT_APP_STATIC_URL}attach_file.svg`;
+    const attachFileIconDark = `${process.env.REACT_APP_STATIC_URL}attach_file_dark.svg`;
+    const fileNameIcon = `${process.env.REACT_APP_STATIC_URL}form.svg`;
 
     const uploadButtonLabel = "Select File";
     const reuploadButtonLabel = "Reselect File";
@@ -21,21 +27,78 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
 
     const submitEnterListener = (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault();
             if (fileInputIsntEmpty()) {
                 submitButtonRef.current.click();
             }
         }
     }
 
+    const onFileDrag = (e) => {
+        e.preventDefault();
+        if (filesContainerRef.current === e.target || bottomBarRef.current === e.target ||
+            filesContainerRef.current.contains(e.target) || bottomBarRef.current.contains(e.target) ||
+            e.target.classList.contains('ds')) {
+            setIsDraggingFile(true);
+            setMenuActive(true);
+            setTrayOpenPreview(-1);
+        } else {
+            setIsDraggingFile(false);
+            setMenuActive(false);
+            setTrayOpenPreview(0);
+        }
+    }
+
+    const onFileDrop = (e) => {
+        e.preventDefault();
+        setIsDraggingFile(false);
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            setTimeout(()=>{
+                handleFileUpload(e, files[0]);
+            }, 50);
+        }
+    }
+
+    const onMouseLeaveWindow = (e) => {
+        if (e.clientX === 0) {
+            setIsDraggingFile(false);
+            setMenuActive(false);
+            setTrayOpenPreview(0);
+        }
+    }
+
     useEffect(()=>{
-        document.addEventListener('keydown', submitEnterListener);
+        if (isDraggingFile === true) {
+            if (dragContainerUiRef.current) {
+                dragContainerUiRef.current.classList.add('active');
+            }
+        } else {
+            dragContainerUiRef.current.classList.remove('active');
+            setTrayOpenPreview(0);
+        }
+    }, [isDraggingFile]);
+
+    useEffect(()=>{
+        window.addEventListener('dragover', onFileDrag);
+        window.addEventListener('drop', onFileDrop);
         return () => {
-            document.removeEventListener('keydown', submitEnterListener);
+            window.removeEventListener('dragover', onFileDrag);
+            window.removeEventListener('drop', onFileDrop);
+        }
+    }, [filesContainerRef.current]);
+
+    useEffect(()=>{
+        window.addEventListener('keydown', submitEnterListener);
+        window.addEventListener('dragleave', onMouseLeaveWindow);
+        return () => {
+            window.removeEventListener('keydown', submitEnterListener);
+            window.removeEventListener('dragleave', onMouseLeaveWindow);
         }
     },[]);
 
     const fileInputIsntEmpty = () => {
-        if (fileInputRef.current) {
+        if (fileInputRef.current && fileInputRef.current.value && fileInputRef.current.value !== '') {
             return true;
         }
     }
@@ -44,9 +107,12 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
         fileInputRef.current.value = '';
     }
 
-    const handleFileUpload = (e) => {
+    const handleFileUpload = (e, other_file=null) => {
         var selected_file;
-        if (e.target.files.length > 0) {
+        if (other_file) {
+            selected_file = other_file;
+            setTitle('');
+        } else if (e.target.files.length > 0) {
             selected_file = e.target.files[0];
             setTitle('');
         } else {
@@ -56,6 +122,7 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                 return;
             }
         }
+        setTimeout(()=>{fileNameInputRef.current.focus()}, 50); // bugs out if i focus immediatly.
         setCurrentFile(selected_file);
         setTitlePlaceholder(selected_file.name);
         setFileSIze(selected_file.size);
@@ -131,18 +198,23 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
 
     return (
         <form id={formId} className="uploadForm" ref={formRef}/* onSubmit={handleSubmit}*/ encType="multipart/form-data">
+            {trayOpen === 0 || trayOpen === -1 ?
             <button 
-            type="button"
-            className={`uploadButton ${trayOpen !== 0 ? 'uploadButtonOpen' : ''} ${isUploadButtonActive === true ? '' : 'disabled'}`}
-            disabled={!isUploadButtonActive}
-            onClick={handleExternalInputButtonClick}>
-                <object 
-                aria-label="+"
-                className="uploadImg"
-                data={attachFileIcon}
-                type="image/svg+xml"></object>
-                {trayOpen === 1 ? reuploadButtonLabel : uploadButtonLabel}
+                type="button"
+                className={`uploadButton ${trayOpen !== 0 ? 'uploadButtonOpen' : ''} ${isUploadButtonActive === true ? '' : 'disabled'}`}
+                disabled={!isUploadButtonActive}
+                onClick={handleExternalInputButtonClick}>
+                <img className="uploadImg" src={attachFileIcon}/>
+                {uploadButtonLabel}
             </button>
+            :
+            <ReselectFileButton
+                title={reuploadButtonLabel}
+                icon={attachFileIconDark}
+                onClick={handleExternalInputButtonClick}
+            />
+            }
+            
             { trayOpen === 0 && fileInputIsntEmpty() && clearFileInput() }
             <input 
                 ref={fileInputRef}
@@ -153,12 +225,15 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                 multiple={false}
             />
             <div className="inputGrid">
-                <input className="titleInput"
-                    type="text"
+                <FormInput
+                    icon={fileNameIcon}
+                    title='FILE NAME'
                     value={title}
+                    setValue={setTitle}
                     placeholder={titlePlaceholder}
-                    onChange={e => setTitle(e.target.value)}
-                    spellCheck={false}
+                    addClass={'formTextInputRoundLeft'}
+                    inputRef={fileNameInputRef}
+                    required
                 />
                 <select className="expireSelect"
                     value={expiresInDays}
@@ -170,13 +245,8 @@ function FileUploadForm({ formId, currentUser, collectionId, setUploadProgress, 
                 </select>
             </div>
             <button ref={submitButtonRef} form={formId} className="submitButton" onClick={handleSubmit} type="button" /*type="submit"*/>
-            <object 
-                className="submitImg"
-                data={cloudUploadIcon}
-                type="image/svg+xml"
-            >
-            </object>
-                {submitButtonLabel}
+            <img className="submitImg"src={cloudUploadIcon}/>
+                <div>{submitButtonLabel}</div>
             </button>
         </form>
     )

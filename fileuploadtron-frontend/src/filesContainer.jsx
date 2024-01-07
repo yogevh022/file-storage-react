@@ -5,12 +5,16 @@ import getFileTypeIcon from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
 import LoadingCircle from "./loadingCircle";
 import EmptyCollection from "./emptyCollection";
+import DragDropFile from "./dragDropFile";
 
 function FilesContainer(props) {
     const {data: filesData, isLoading} = useFetch(`/api/collections/${props.collectionId}/files/`);
+    const [localFilesData, setLocalFilesData] = useState(null);
     const [displayData, setDisplayData] = useState(null);
     const alreadyAnimated = new Set();
     const childRefs = useRef([]);
+
+    const uploadIcon = `${process.env.REACT_APP_STATIC_URL}upload.svg`;
 
 
     const checkIfItemIsNewlyCreated = (item) => {
@@ -25,6 +29,21 @@ function FilesContainer(props) {
             }
         }
         return false;
+    }
+
+    const handleDelete = (_fileId) => {
+        var fileToDelete = localFilesData.find(obj => obj.id === _fileId);
+        props.onFileDeleted({"title": fileToDelete.title, "id": _fileId});
+        const _data = localFilesData.filter(i => i.id !== _fileId);
+        setLocalFilesData(_data);
+        childRefs.current.forEach(childRef => {
+            if (childRef && childRef.getId() === _fileId) {
+                childRef.deleteSelf();
+            }
+        });
+        setTimeout(()=>{
+            setDisplayData(_data);
+        },200);
     }
 
     const handleCopy = () => {
@@ -52,21 +71,27 @@ function FilesContainer(props) {
     }, []);
 
     useEffect(() => {
+        setLocalFilesData(filesData);
         setDisplayData(filesData);
     }, [filesData]);
     
     useEffect(() => {
         if (props.postDataResponse !== null) {
-            setDisplayData((displayData) => {return [...displayData, props.postDataResponse]});
+            var newData = (localFilesData) => {return [...localFilesData, props.postDataResponse]};
+            setLocalFilesData(newData);
+            setDisplayData(newData);
         }
     }, [props.postDataResponse]);
 
     return (
-    <div className='filesContainer'>
+    <div ref={props.filesContainerRef} className='filesContainer'>
         { isLoading && <LoadingCircle/> }
         { displayData && displayData.length === 0 && <EmptyCollection collectionName={props.collectionData && props.collectionData.name}/> }
-        {/* { postDataResponse && getNewItemJsx(postDataResponse) } */}
-        { displayData && displayData.toReversed().map((item, index) => (
+        <DragDropFile
+            containerRef={props.dragContainerUiRef}
+            uploadIcon={uploadIcon}
+        />
+        { props.currentUser && displayData && displayData.toReversed().map((item, index) => (
             <StoredFile
             ref={(ref)=>{childRefs.current[index] = ref}}
             key={item['id']}
@@ -80,6 +105,8 @@ function FilesContainer(props) {
             isNewlyCreated={checkIfItemIsNewlyCreated(item)}
             onCopyClipboard={props.onCopyClipboard}
             onUnableCopyClipboard={props.onUnableCopyClipboard}
+            handleDelete={handleDelete}
+            canDelete={item['user'].id === props.currentUser.id}
             displayIcon={getFileTypeIcon(getFileExtension(item['title']))}
             />
             

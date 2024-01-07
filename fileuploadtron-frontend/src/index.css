@@ -2,14 +2,16 @@
   --sfcpad: 15px;
   --inputpad: 25px;
   --inputheight: 60px;
-  --barheight: calc(var(--inputheight) * 2);
-  --uipad: calc(var(--inputheight) * 0.5);
+  --uipad: calc(var(--inputheight) * 0.33333334);
+  --barheight: calc(var(--inputheight) + calc(var(--uipad) * 2));
   --uirad: 35px;
   --uimrad: 5px;
-  --uifontsize: 26px;
+  --uifontsize: 20px;
   --fileimgsize: 40px;
   --sfsizewidth: 60px;
   --sfbtnwidth: 30px;
+
+  --dsopacity: 0.85;
 
   --miconwidth: 24px; /* 27px */
   --miconwidthLarge: 27px; /* 27px */
@@ -22,6 +24,7 @@
   --dk2: #323957;
   --dk25: #4A4E7C;
   --dk3: #A2C1D1;
+  --dk33: #8076b0;
   --dk34: #c8bcfe;
   --dk35: #dcd4ff;
   --dk4: #E6E6FA;
@@ -35,6 +38,8 @@
   --lt_i:#787FF6;
   --lt_j:#8B78E6;
   --lt_k:#7BD5F5;
+
+  --lt_red: #d53731;
 
 
   --c:#1B1F32
@@ -60,12 +65,11 @@
 
     --inputpad: 25px;
     --inputheight: 70px;
-    --barheight: calc(var(--inputheight) * 2);
-    --uipad: calc(var(--inputheight) * 0.5);
+    --uipad: calc(var(--inputheight) * 0.33333334);
   }
 
   .expireSelect {
-    font-size: 14px !important;  /* smaller on mobile ( on desktop its var(--uifontsize) )*/
+    /*font-size: 14px !important;  /* smaller on mobile ( on desktop its var(--uifontsize) )*/
   }
 
   /* .storedFileContainer:active {
@@ -74,6 +78,9 @@
 
   .sfBtnContainer:active {
     background-color: var(--dk1);
+  }
+  .sfBtnContainer.deleteBtn:active {
+    background-color: var(--lt_red);
   }
   .sfBtnContainer:active .sfBtn {
     filter: brightness(1);
@@ -88,6 +95,10 @@
     background-position: 100% 0;
     box-shadow: 0 0 5px 1px var(--lt_i);
   }
+
+  .reselectFileButton div div {
+    max-width: 80% !important;
+  }
 }
 
 @media (hover:hover) {
@@ -100,6 +111,9 @@
   }
   .sfBtnContainer:hover .sfBtn {
     filter: brightness(1);
+  }
+  .sfBtnContainer.deleteBtn:hover {
+    background-color: var(--lt_red);
   }
 
   .uploadButton:not(.uploadButtonOpen):not(.disabled):hover {
@@ -121,6 +135,14 @@
   .selectedFileCollection:hover {
     filter: brightness(1);
     cursor: pointer;
+  }
+
+  .selectFileButton:hover .selectFileButtonRect {
+    /* animation: offsetCycle 2s linear infinite; */
+    animation-duration: 2s !important;
+  }
+  .reselectFileButton:hover {
+    filter: brightness(1);
   }
 }
 
@@ -193,7 +215,7 @@ button {
 }
 
 .ds.active {
-  opacity: 0.75;
+  opacity: var(--dsopacity);
   pointer-events: auto;
 }
 
@@ -217,7 +239,7 @@ button {
   height: 70px;
   min-height: 70px;
   width: 100%;
-  background-color: var(--dk1);
+  background-color: var(--loginContainerColor);
 
   display: flex;
   align-items: center;
@@ -329,17 +351,18 @@ button {
 
 .bottomTrayOpenMinimal {
   transform: translateY( calc( calc(var(--barheight) * -1) + (calc(var(--uipad) * 1)) )) !important;
-  background-color: var(--dk1);
+  background-color: var(--loginContainerColor);
 }
 
 .bottomTrayOpen {
   transform: translateY( calc( calc(var(--barheight) * -2) + (calc(var(--uipad) * 2)) )) !important;
-  background-color: var(--dk1);
+  background-color: var(--loginContainerColor);
+  
 }
 
 .bottomTrayOpenExtended {
   transform: translateY( calc( calc(var(--barheight) * -4) + (calc(var(--uipad) * 4)) )) !important;
-  background-color: var(--dk1);
+  background-color: var(--loginContainerColor);
 }
 
 
@@ -409,7 +432,7 @@ button {
   white-space: nowrap;
   overflow: hidden;
 
-  color: white;
+  color: var(--dk35);
 }
 
 .popupIcon {
@@ -427,15 +450,18 @@ button {
   flex-direction: column;
   align-items: center;
 
+  gap: var(--uipad);
+
   padding: var(--uipad);
 
   box-sizing: border-box;
 }
 
-.inputGrid {
+.inputGrid0 {
   width: var(--uploadbtnwidth);
   max-width: 100%;
   height: var(--inputheight);
+  height: fit-content;
   max-height: var(--inputheight);
   display: grid;
   grid-template-columns: 75% 25%;
@@ -445,6 +471,17 @@ button {
   overflow: hidden;
 
   margin-top: var(--uipad);
+}
+
+.inputGrid {
+  width: var(--uploadbtnwidth);
+  max-width: 100%;
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: var(--uipad);
+
 }
 
 .titleInput {
@@ -466,58 +503,27 @@ button {
 }
 
 .expireSelect {
-  height: var(--inputheight);
+  /* height: var(--inputheight); */
   box-sizing: border-box;
   outline: none;
   border: none;
-  border-radius: 0px !important;
+  border-radius: var(--loginrad) var(--uirad) var(--uirad) var(--loginrad);
 
-  font-weight: 600;
-  font-size: var(--uifontsize);
-
-  color: var(--dk1);
-
-  text-align: center;
-  text-align-last: center;
-}
-
-.textInput {
-  width: var(--uploadbtnwidth);
-  max-width: 100%;
-  height: var(--inputheight);
-  max-height: var(--inputheight);
-
-  color: var(--dk4);
   font-weight: 400;
   font-size: var(--uifontsize);
 
   text-align: center;
+  text-align-last: center;
 
-  padding-left: var(--inputpad);
-  padding-right: var(--inputpad);
-  box-sizing: border-box;
-
-  border: 2px solid var(--dk25);
-  border-radius: var(--uirad);
-  overflow: hidden;
-
-  margin-bottom: var(--uipad);
-
-  background-color: transparent;
-  outline: none;
+  background-color: var(--loginContainerColor);
+  color: var(--dk34);
 }
-.textInput::placeholder {
-  color: var(--dk2);
+.expireSelect:focus {
+  background-color: var(--dk1);
 }
-
-.passwordOn {
-  font-family: sans-serif !important;
-  font-weight: 600 !important;
-  font-size: 40px !important;
-}
-
-.uiButton {
-  margin-bottom: var(--uipad);
+.expireSelect option {
+  background-color: var(--loginContainerColor);
+  color: var(--dk34);
 }
 
 .joinCollection {
@@ -532,26 +538,6 @@ button {
   box-shadow: 0 0 10px 2px transparent;
 }
 
-.collectionImageButton {
-  padding-right: var(--inputpad);
-  padding-left: var(--inputpad);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.collectionImageButtonIcon {
-  width: var(--miconwidth);
-  max-height: var(--miconwidth);
-}
-
-.collectionImageButton span {
-  /* font-weight: 400 !important; */
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
 .uploadButton {
   outline: none;
   width: var(--uploadbtnwidth);
@@ -563,7 +549,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;  /* add to uploadImg margin-left */
+  gap: 5px;  /* add to uploadImg margin-left */
   cursor: pointer;
 
   text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
@@ -583,15 +569,6 @@ button {
   filter: brightness(1) drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
 }
 
-.uploadButtonOpen {
-  border: 3px dashed var(--dk3) !important;
-  color: var(--dk3) !important;
-  background: transparent !important;
-}
-.uploadButtonOpen > .uploadImg {
-  filter: brightness(0.75) drop-shadow(0px 0px 3px rgba(0,0,0,0.5)) !important;
-}
-
 .uploadButton.disabled {
   opacity: 0.1 !important;
   cursor: default;
@@ -599,11 +576,13 @@ button {
 
 .uploadImg {
   fill: inherit;
-  height: var(--miconwidth);
-  max-width: var(--miconwidth);
-  margin-left: calc(calc(var(--miconwidth) * -1) + 10px); /* 10px = uploadButton gap */
+  height: var(--miconwidthLarge);
+  max-width: var(--miconwidthLarge);
+  margin-left: calc(calc(var(--miconwidthLarge) * -1) + 10px); /* 10px = uploadButton gap */
   pointer-events: none;
   filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
+
+  margin-top: 2px;
 }
 
 .submitButton {
@@ -622,7 +601,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;  /* add to uploadImg margin-left */
+  gap: 5px;  /* add to uploadImg margin-left */
   cursor: pointer;
 
   background-size: 250% 100%;
@@ -633,15 +612,17 @@ button {
 
   transition: background-position var(--btnanimlen) ease-in-out, box-shadow var(--btnanimlen) ease-in-out;
 
-  margin-top: var(--uipad);
+  /* margin-top: var(--uipad); */
 }
 
 .submitImg {
   fill: inherit;
-  height: var(--miconwidthLarge);
-  max-width: var(--miconwidthLarge);
+  height: 30px;
+  max-width: 30px;
   margin-left: calc(calc(var(--miconwidthLarge) * -1) + 10px); /* 10px = uploadButton gap */
   pointer-events: none;
+
+  margin-top: 2px;
 
   filter: brightness(1);
   filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
@@ -659,6 +640,8 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  gap: 10px;
 
   /* min-width: 640px; */
   width: var(--sfcwidth);
@@ -681,16 +664,12 @@ button {
   background-color: var(--dk0);
 }
 
-/* .filesContainer::-webkit-scrollbar-thumb {
-  background-color: var(--dk3);
-  border-radius: 10px;
-} */
-
 .storedFileContainer {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
   align-items: center;
+  gap: var(--sfcpad);
 
   width: 100%;
   min-height: var(--sfcheight);
@@ -698,8 +677,6 @@ button {
   background-color: var(--dk2);
   padding: var(--sfcpad);
   box-sizing: border-box;
-
-  margin: 0px 0px 10px 0px;
 
   border-radius: var(--uimrad);
 
@@ -720,14 +697,17 @@ button {
   justify-content: space-evenly;
   flex-direction: column;
 
-  width: calc(100% - calc(calc(var(--fileimgsize) + var(--sfcpad)) + var(--sfsizewidth) + var(--sfsizewidth)));
-  /* width: calc(100% - calc(var(--fileimgsize) + var(--sfcpad))); */
-  height: 100%;
+  --btnpluspad:calc(46px + var(--sfcpad));
 
+  width: calc(100% - calc(calc(var(--fileimgsize) + var(--sfcpad)) + var(--btnpluspad) + var(--btnpluspad) + var(--btnpluspad)));
+  height: 100%;
+}
+.storedFileInfoContainer.nodel {
+  width: calc(100% - calc(calc(var(--fileimgsize) + var(--sfcpad)) + var(--btnpluspad) + var(--btnpluspad))) !important;
 }
 
 .fileImg {
-  margin-right: var(--sfcpad);
+  /* margin-right: var(--sfcpad); */
   max-height: var(--fileimgsize);
   width: var(--fileimgsize);
 }
@@ -778,7 +758,6 @@ button {
   width: 46px;
   height: 46px;
   background-color: transparent;
-
 }
 
 .sfBtn {
@@ -833,7 +812,7 @@ button {
 
   transition: transform .3s, opacity .3s;
 
-  background-color: var(--dk2);
+  background-color: var(--loginContainerColor);
 
   z-index: 3000;
 }
@@ -943,7 +922,128 @@ button {
 .loadingSpinner .innerPath {
   stroke: var(--dk34);
   stroke-linecap: round;
-  animation: dash 2s ease-in-out infinite;
+  animation: dash 5s ease-in-out infinite;
+}
+
+.selectFileButton {
+  /* width: var(--uploadbtnwidth);
+  height: var(--inputheight); */
+  width: 100%;
+  height: var(--inputheight);
+  overflow: visible;
+}
+.selectFileButtonRect {
+  max-width: var(--uploadbtnwidth);
+  width: 100%;
+  height: var(--inputheight);
+  max-height: 100%;
+
+  stroke: var(--dk34);
+  stroke-linecap: round;
+  stroke-dasharray: 10, 15;
+  stroke-dashoffset: 0;
+
+  animation: offsetCycle 20s linear infinite;
+}
+
+.dragBorderCorrection {
+  height: 300px;
+  width: 100%;
+  stroke: var(--dk34);
+  stroke-linecap: round;
+  stroke-dasharray: 15, 27;
+
+  transform-origin: center center;
+  transform: translateY(-120px) scale(0.9); /* (300 / 2) - (60 / 2) */
+
+  animation-duration: 5s !important;
+}
+
+.reselectFileButton {
+  width: var(--uploadbtnwidth);
+  max-width: 100%;
+  height: var(--inputheight);
+  font-weight: 600;
+  font-size: var(--uifontsize);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;  /* add to uploadImg margin-left */
+  cursor: pointer;
+
+  text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
+  user-select: none;
+
+  border: none;
+  color: var(--dk34);
+  filter: brightness(0.8);
+}
+.reselectFileButton div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  position: absolute;
+  pointer-events: none;
+
+}
+.reselectFileButton div img {
+  margin-left: 5px;
+}
+.reselectFileButton div div {
+  display: block;
+  position: relative;
+  max-width: calc(var(--uploadbtnwidth) - 300px);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.deleteAnim {
+  animation: shrinkOut .2s ease-out forwards !important;
+}
+
+.dragDropFileContainer {
+  position: absolute;
+  display: flex; /* flex on .active */
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1100; /* .ds is 1000 */
+  /* background-color: var(--dk05); */
+
+  opacity: 0;
+
+  width: 100%;
+  height: 100%;
+  top: 0;
+
+  transition: opacity .2s ease-in-out;
+  pointer-events: none;
+}
+
+.dragDropFileContainer.active {
+  opacity: var(--dsopacity);
+}
+
+.dragDropSvgContainer {
+  /* width: calc(var(--uploadbtnwidth) - 50px ); */
+  width: var(--uploadbtnwidth);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dragDropUploadImage {
+  position: absolute;
+  width: 100px;
+  max-height: 100px;
+  transform: translateY(-10px);
 }
 
 /* react css transitions */
@@ -1022,5 +1122,25 @@ button {
   100% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -124;
+  }
+}
+
+@keyframes offsetCycle {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -124;
+  }
+}
+
+@keyframes shrinkOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
   }
 }

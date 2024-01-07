@@ -234,6 +234,8 @@
     font-weight: 600;
 
     color: var(--dk25);
+
+    animation: fadeInPerm .5s ease-out forwards;
 }
 
 .messageLink {
@@ -245,4 +247,13 @@
     background-image: linear-gradient(35deg, var(--lt_h)0%, var(--lt_i)40%, var(--lt_j), var(--lt_k));
     background-clip: text;
     color: transparent;
+}
+
+@keyframes fadeInPerm {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

@@ -41,7 +41,7 @@ function Login() {
     }
 
     return (
-        <div className='globalContainer'>
+        <div className='globalContainer loginGlobal'>
             <div className='loginContainer'>
                 { currentUser && <Navigate to="/collections/"/>}
                 <form className='credForm' onSubmit={handleSubmit}>

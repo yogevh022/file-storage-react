@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import CopyTextWindow from './copyTextWindow';
 import StoredFileInfo from './storedFileInfo';
 
-const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}, ref) => {
+const StoredFile = forwardRef(({fileId, user, collectionId, handleDelete, canDelete, onUnableCopyClipboard,onCopyClipboard,isNewlyCreated, title, fileData, fileSize, expirationDateTime, displayIcon}, ref) => {
     const sfcRef = useRef(null);
     const [animClass, setAnimClass] = useState("");
     const [isCopyWindowActive, setIsCopyWindowActive] = useState(false);
@@ -11,6 +11,8 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
     const copyClipboardIcon = `${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`;
     const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download.svg`;
     const closeIcon = `${process.env.REACT_APP_STATIC_URL}cancel.svg`;
+    const deleteIcon = `${process.env.REACT_APP_STATIC_URL}trash.svg`;
+    
 
     const removeAnimationClassAndListener = () => {
         setAnimClass('');
@@ -24,8 +26,12 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
         }
     }, [isNewlyCreated]);
     
+    const getCoreUrl = () => {
+        return window.location.protocol + '//' + window.location.host;
+    }
+
     const getFileUrl = (_fileId) => {
-        var coreUrl = window.location.protocol + '//' + window.location.host;
+        var coreUrl = getCoreUrl();
         return `${coreUrl}/api/collections/${collectionId}/files/${_fileId}/`;
     }
 
@@ -72,10 +78,39 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
         }
     }
 
+    const deleteSelf = () => {
+        var thisSfc = sfcRef.current;
+        if (thisSfc) {
+            thisSfc.classList.add('deleteAnim');
+        }
+    }
+    const getId = () => {
+        return fileId;
+    }
+
     useImperativeHandle(ref, ()=>({
         handleCopyEvent,
         handleClickAnywhere,
+        deleteSelf,
+        getId,
     }));
+
+
+    const delete_file = () => {
+        fetch(getCoreUrl() + `/api/collections/${collectionId}/files/${fileId}/`, {
+            method: 'DELETE',
+        })
+        .then(res => {
+            if (res.ok) {
+                handleDelete(fileId);
+            } else {
+                return Promise.reject(res.err);
+            }
+        })
+        .catch(e => {
+            console.log("tech ; ", e);
+        });
+    }
 
     const handleClick = (e) => {
         e.preventDefault();
@@ -86,6 +121,9 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
                 copyToClipboard(getFileUrl(fileId));
             }
             return;
+        }
+        if (e.target.classList.contains('deleteBtn')) { // delete btn clicked
+            delete_file();
         }
         if (e.target.classList.contains('downloadBtn')) { // download btn clicked
             var __DEBUG = false;
@@ -148,7 +186,7 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
     return (
         <div ref={sfcRef} className={`storedFileContainer ${animClass}`} onClick={handleClick}>
             <img className='fileImg' src={displayIcon} alt="no img"/>
-            <div className='storedFileInfoContainer'>
+            <div className={`storedFileInfoContainer ${canDelete ? '' : 'nodel'}`}>
                 { isCopyWindowActive === false && 
                     <StoredFileInfo
                         title={title}
@@ -165,11 +203,16 @@ const StoredFile = forwardRef(({fileId, user, collectionId, onUnableCopyClipboar
                 }
                 {/* <span>{expirationDateTime}</span> */}
             </div>
-            <div className='downloadBtn sfBtnContainer'>
-                <img className='sfDlBtn sfBtn' src={downloadIcon} alt="V"/>
-            </div>
+            { canDelete &&
+                <div className='deleteBtn sfBtnContainer'>
+                    <img className='sfDelBtn sfBtn' src={deleteIcon} alt="V"/>
+                </div>
+            }
             <div className='shareBtn sfBtnContainer'>
                 <img className='sfShrBtn sfBtn' src={isCopyWindowActive === true ? closeIcon : copyClipboardIcon} alt="S"/>
+            </div>
+            <div className='downloadBtn sfBtnContainer'>
+                <img className='sfDlBtn sfBtn' src={downloadIcon} alt="V"/>
             </div>
         </div>
     )

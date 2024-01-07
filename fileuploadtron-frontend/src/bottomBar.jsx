@@ -14,7 +14,8 @@ function BottomBar(props) {
             '!image': ['The chosen file is not an image.'],
             '!password': ['Passwords entered for verification do not match.'],
             '!uploadcollection': ['Unable to create ', dynamicText],
-            'uploadcollection': ['', dynamicText, ' has been successfully created'],
+            'uploadcollection': ['', dynamicText, ' has been created'],
+            'delete': ['', dynamicText, ' has been deleted'],
         }[popupType];
     }
     
@@ -23,6 +24,7 @@ function BottomBar(props) {
     const uploadCompleteIcon = `${process.env.REACT_APP_STATIC_URL}cloud_check.svg`;
     const copyCompleteIcon = `${process.env.REACT_APP_STATIC_URL}copy.svg`;
     const warningTriangleIcon = `${process.env.REACT_APP_STATIC_URL}warning_triangle.svg`;
+    const deleteCompleteIcon = `${process.env.REACT_APP_STATIC_URL}trash_check.svg`;
     const popupLifespanMili = 2000;
     const [popupIcon, setPopupIcon] = useState(uploadCompleteIcon);
     const [popupText, setPopupText] = useState([]);
@@ -37,7 +39,8 @@ function BottomBar(props) {
         "copy": copyCompleteIcon,
         "!copy": warningTriangleIcon,
         '!image': warningTriangleIcon,
-        '!password': warningTriangleIcon
+        '!password': warningTriangleIcon,
+        'delete': deleteCompleteIcon
     }
     const fileFormId = "fuForm";
     const collectionFormId = 'cuForm';
@@ -75,6 +78,12 @@ function BottomBar(props) {
             callPopup("copy", props.lastClipboardCopy);
         }
     },[props.lastClipboardCopy]);
+
+    useEffect(()=>{
+        if (props.lastDeleted) {
+            callPopup("delete", props.lastDeleted);
+        }
+    }, [props.lastDeleted]);
 
     useEffect(()=>{
         if (isPopupInitial) {
@@ -123,6 +132,7 @@ function BottomBar(props) {
     }
 
     const trayLevels = {
+        [-1]: 'bottomTrayFullyClosed',
         0: props.formType === 'file' ? '' : 'bottomTrayFullyClosed',
         1: 'bottomTrayOpenMinimal',
         2: 'bottomTrayOpen',
@@ -131,17 +141,17 @@ function BottomBar(props) {
 
 
     return (
-        <div className="bottomBar">
+        <div ref={props.bottomBarRef} className="bottomBar">
             <div id="botTray" className={`bottomTray ${trayLevels[trayOpen]}`}>
                 <PopupTray
-                key={`${popupId}`}
-                popupIconUrl={popupIcon}
-                popupTextList={popupText}
-                isPopupActive={isPopupActive}
-                setIsPopupActive={setIsPopupActive}
-                popupLifespanMili={popupLifespanMili}
-                trayLevel={trayOpen}
-                alwaysMargin={props.formType === 'collection' ? true : false}
+                    key={`${popupId}`}
+                    popupIconUrl={popupIcon}
+                    popupTextList={popupText}
+                    isPopupActive={isPopupActive}
+                    setIsPopupActive={setIsPopupActive}
+                    popupLifespanMili={popupLifespanMili}
+                    trayLevel={trayOpen}
+                    alwaysMargin={props.formType === 'collection' ? true : false}
                 />
                 { props.formType === 'file' && 
                 <FileUploadForm
@@ -150,10 +160,15 @@ function BottomBar(props) {
                     collectionId={props.collectionId}
                     trayOpen={trayOpen}
                     setTrayOpen={handleMenuOpen}
+                    setTrayOpenPreview={setTrayOpen}
                     closeTray={handleMenuClose}
                     onPostResponse={onPostResponseReceivedWrapper}
                     onPostFailure={onPostFailure}
                     setUploadProgress={props.setUploadProgress}
+                    filesContainerRef={props.filesContainerRef}
+                    dragContainerUiRef={props.dragContainerUiRef}
+                    bottomBarRef={props.bottomBarRef}
+                    setMenuActive={props.setMenuActive}
                 />}
                 { props.formType === 'collection' && 
                 <CollectionUploadForm 

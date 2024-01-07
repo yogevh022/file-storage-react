@@ -50,7 +50,7 @@ function Register() {
     }
 
     return (
-        <div className='globalContainer'>
+        <div className='globalContainer loginGlobal'>
             <div className='loginContainer'>
                 <form className='credForm' onSubmit={handleSubmit}>
                     <div className='temp regtemp'>FileUploadinator</div>
@@ -59,6 +59,7 @@ function Register() {
                         title='EMAIL'
                         value={email}
                         setValue={setEmail}
+                        mandatory
                         required
                     />
                     <FormInput
@@ -66,6 +67,7 @@ function Register() {
                         title='USERNAME'
                         value={username}
                         setValue={setUsername}
+                        mandatory
                         required
                     />
                     <FormInput
@@ -74,6 +76,7 @@ function Register() {
                         value={password}
                         setValue={setPassword}
                         isPassword={true}
+                        mandatory
                         required
                     />
                     <FormInput
@@ -82,6 +85,7 @@ function Register() {
                         value={confirmPassword}
                         setValue={setConfirmPassword}
                         isPassword={true}
+                        mandatory
                         required
                     />
                     <button className='loginButton registerButton' type='submit'>Register</button>

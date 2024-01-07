@@ -166,12 +166,17 @@ def storedFiles(req, auth_context, collection_id=None):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-@api_view(['GET'])
-def downloadView(req, collection_id, file_id):
-    sf = get_object_or_404(storedFile, pk=file_id)
-    res = FileResponse(open(sf.fileData.path, 'rb'))
-    res['Content-Disposition'] = f'attachment; filename="{sf.title}"'
-    return res
+@api_view(['GET', 'DELETE'])
+def fileView(req, collection_id, file_id):
+    if req.method == 'GET':
+        sf = get_object_or_404(storedFile, pk=file_id)
+        res = FileResponse(open(sf.fileData.path, 'rb'))
+        res['Content-Disposition'] = f'attachment; filename="{sf.title}"'
+        return res
+    if req.method == 'DELETE':
+        sf = get_object_or_404(storedFile, pk=file_id)
+        sf.delete()
+        return Response({"message": "deleted"},status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 @login_required(redirect_url=None)

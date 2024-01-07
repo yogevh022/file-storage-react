@@ -2,11 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { getFileTypeGroup } from "./getFileTypeIcon";
 import getFileExtension from "./getFileExtension";
 import { useNavigate } from 'react-router-dom';
+import FormInput from "./formInput";
+import ReselectFileButton from "./reselectFileButton";
 
 
 var trayLevelFreezes = {
     0: '',
-    1: ''
+    1: '',
+    2: ''
 }
 
 function CollectionUploadForm(props) {
@@ -21,12 +24,14 @@ function CollectionUploadForm(props) {
 
     const joinCollectionSubmitTitle = 'Join Collection';
     const createCollectionSubmitTitle = 'Create Collection';
-    const collectionTitlePlaceholder = 'Collection Name';
-    const collectionPasswordPlaceholder = 'Collection Password';
-    const collectionVerifyPasswordPlaceholder = 'Verify Password';
-    const defaultCollectionImageText = 'Collection Image';
+    const collectionNameTitle = 'Collection Name';
+    const collectionPasswordTitle = 'Collection Password';
+    const collectionVerifyPasswordTitle = 'Verify Password';
+    const defaultCollectionImageText = 'No Thumbnail';
 
     const imgIcon = `${process.env.REACT_APP_STATIC_URL}image.svg`;
+    const passwordIcon = `${process.env.REACT_APP_STATIC_URL}lock.svg`;
+    const nameIcon = `${process.env.REACT_APP_STATIC_URL}tag.svg`;
 
 
     const isHidden = (condition, trayLevelNum) => {
@@ -187,46 +192,44 @@ function CollectionUploadForm(props) {
             <button 
                 type="button"
                 onClick={handleJoinCollectionPress}
-                className={`uploadButton uiButton joinCollection ${isHidden(props.trayLevel >= 2, 0)}`}
+                className={`uploadButton joinCollection ${isHidden(props.trayLevel >= 2, 0)}`}
                 >
                 Join Collection
             </button>
             <button 
                 type="button"
                 onClick={handleCreateCollectionPress}
-                className={`uploadButton uiButton createCollection ${isHidden(props.trayLevel >= 2, 0)}`}
+                className={`submitButton createCollection ${isHidden(props.trayLevel >= 2, 0)}`}
                 >
                 Create Collection
             </button>
-            <input
-                // ref={fileInputRef}
-                className="textInput"
-                type="text"
-                required
-                placeholder={collectionTitlePlaceholder}
-                onChange={e=>setCollectionName(e.target.value)}
+            <FormInput
+                icon={nameIcon}
+                iconAdjustment={'tagIconAdjustment'}
+                title={collectionNameTitle}
                 value={collectionName}
-                spellCheck={false}
-            />
-            <input
-                // ref={fileInputRef}
-                className={`textInput ${collectionPassword !== '' ? 'passwordOn' : ''}`}
-                type="password"
-                autoComplete="new-password"
+                setValue={setCollectionName}
+                mandatory={`${isHidden(props.trayLevel === 2, 2) === '' ? 'active' : ''}`}
                 required
-                placeholder={collectionPasswordPlaceholder}
-                onChange={e=>setCollectionPassword(e.target.value)}
+            />
+            <FormInput
+                icon={passwordIcon}
+                title={collectionPasswordTitle}
                 value={collectionPassword}
-            />
-            <input
-                // ref={fileInputRef}
-                className={`textInput ${collectionVerifyPassword !== '' ? 'passwordOn' : ''} ${isHidden(props.trayLevel !== 3, 1)}`}
-                type="password"
-                autoComplete="new-password"
+                setValue={setCollectionPassword}
+                autoComplete={'new-password'}
                 required
-                placeholder={collectionVerifyPasswordPlaceholder}
-                onChange={e=>setCollectionVerifyPassword(e.target.value)}
+                isPassword={true}
+            />
+            <FormInput
+                icon={passwordIcon}
+                title={collectionVerifyPasswordTitle}
                 value={collectionVerifyPassword}
+                setValue={setCollectionVerifyPassword}
+                autoComplete={'new-password'}
+                required
+                isPassword={true}
+                addClass={`${isHidden(props.trayLevel !== 3, 1)}`}
             />
             <input 
                 ref={collectionImageInputRef}
@@ -236,22 +239,16 @@ function CollectionUploadForm(props) {
                 onChange={handleCollectionImageUpload}
                 multiple={false}
             />
-            <button 
-                type="button"
-                className={`uploadButton uploadButtonOpen uiButton collectionImageButton ${isHidden(props.trayLevel !== 3, 1)}`}
+            <ReselectFileButton
+                icon={imgIcon}
+                title={currentCollectionImage ? currentCollectionImage.name : defaultCollectionImageText}
                 onClick={handleCollectionImageClick}
-                >
-                <img className="collectionImageButtonIcon" src={imgIcon} alt="i"/>
-                <span>
-                    {currentCollectionImage && currentCollectionImage.name}
-                    {!currentCollectionImage && defaultCollectionImageText}
-                </span>
-            </button>
+                addClass={`${isHidden(props.trayLevel !== 3, 1)}`}
+            />
             <button 
                 type="button"
-                className={`uploadButton uiButton ${props.trayLevel === 2 && '__join'} ${props.trayLevel === 3 && '__create'}`}
+                className={`${props.trayLevel === 2 && 'uploadButton __join'} ${props.trayLevel === 3 && 'submitButton __create'}`}
                 onClick={handleSubmit}
-                // style={{'margin-bottom': 'var(--uipad)'}}
                 >
                 {props.trayLevel === 2 && joinCollectionSubmitTitle}
                 {props.trayLevel === 3 && createCollectionSubmitTitle}

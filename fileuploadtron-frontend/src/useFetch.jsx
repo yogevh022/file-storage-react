@@ -7,7 +7,7 @@ function useFetch(url) {
     const loadingTime = 500;
 
     useEffect(() => {
-        setTimeout(()=>{
+        // setTimeout(()=>{
             fetch(url)
                 .then(response => { return response.json(); } )
                 .then(resp_json => {
@@ -18,7 +18,7 @@ function useFetch(url) {
                     console.error('error getting test:', error);
                     setIsLoading(false);
                 });
-        }, loadingTime);
+        // }, loadingTime);
     },[url]);   // dk y
 
     return {data, isLoading};
