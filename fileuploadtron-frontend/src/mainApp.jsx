@@ -18,7 +18,7 @@ function MainApp(props) {
     const [isMenuActive, setIsMenuActive] = useState(false);
     const [isMenuForced, setIsMenuForced] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0.0);
-    const filesContainerRef = useRef();
+    const globalContainerRef = useRef();
     const dragContainerUiRef = useRef();
     const bottomBarRef = useRef();
 
@@ -53,7 +53,7 @@ function MainApp(props) {
     }
 
     return (
-        <div className='globalContainer'>
+        <div ref={globalContainerRef} className='globalContainer'>
         <Darkscreen
             isActive={isMenuActive}
             isMenuForced={isMenuForced}
@@ -68,7 +68,6 @@ function MainApp(props) {
             onCopyClipboard={handleCopyClipboard}
             onUnableCopyClipboard={handleUnableToCopy}
             onFileDeleted={handleOnDeleteFile}
-            filesContainerRef={filesContainerRef}
             dragContainerUiRef={dragContainerUiRef}
         />
         <BottomBar
@@ -80,7 +79,7 @@ function MainApp(props) {
             setMenuActive={setMenuActive}
             setUploadProgress={setUploadProgress}
             unableClipboard={unableClipboard}
-            filesContainerRef={filesContainerRef}
+            filesDragHitboxRef={globalContainerRef}
             dragContainerUiRef={dragContainerUiRef}
             bottomBarRef={bottomBarRef}
             formType='file'

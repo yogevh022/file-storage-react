@@ -2,6 +2,8 @@
     --formTextAnimLen: .25s;
     --loginrad: 20px;
     --loginContainerColor: #161a2d;
+
+    --miconwidthsmall: 20px;
 }
 
 @media screen and (max-width:768px) {
@@ -229,6 +231,24 @@
 }
 .formFieldMandatoryIndicator.active {
     display: flex;
+}
+
+.infoIndicatorContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    gap: 5px;
+    font-weight: 600;
+}
+
+.infoIndicatorContainer.ok { color: var(--lt_green); }
+.infoIndicatorContainer.bad { color: var(--lt_e); }
+
+.infoIndicatorIcon {
+    flex: 0 auto;
+    width: var(--miconwidthsmall);
+    max-height: var(--miconwidthsmall);
 }
 
 .temp {

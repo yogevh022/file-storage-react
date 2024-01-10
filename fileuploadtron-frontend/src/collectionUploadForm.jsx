@@ -18,6 +18,8 @@ function CollectionUploadForm(props) {
     const [collectionVerifyPassword, setCollectionVerifyPassword] = useState('');
     const [currentCollectionImage, setCurrentCollectionImage] = useState(null);
     const collectionImageInputRef = useRef();
+    const collectionNameInputRef = useRef();
+    const submitButtonRef = useRef();
     const navigate = useNavigate();
     
     const postCollectionUrl = '/api/collections/';
@@ -52,6 +54,10 @@ function CollectionUploadForm(props) {
         }
     }
 
+    const canSubmit = () => {
+        return submitButtonRef.current.classList.contains('__create') || submitButtonRef.current.classList.contains('__join');
+    }
+
     const clearFileInput = () => {
         setCurrentCollectionImage(null);
         collectionImageInputRef.current.value = '';
@@ -62,6 +68,22 @@ function CollectionUploadForm(props) {
         setCollectionPassword('');
         setCollectionVerifyPassword('');
     }
+
+    const submitEnterListener = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (canSubmit()) {    // create or join collection screen
+                submitButtonRef.current.click();
+            }
+        }
+    }
+
+    useEffect(()=>{
+        window.addEventListener('keydown', submitEnterListener);
+        return () => {
+            window.removeEventListener('keydown', submitEnterListener);
+        }
+    }, []);
 
     const uploadSuccess = (responseData) => {
         props.onPostResponse(responseData);
@@ -124,14 +146,24 @@ function CollectionUploadForm(props) {
         .then(res => {
             if (res.ok) {
                 return res.json();
-            } else {
-                return Promise.reject("not uploaded successfully");
+            } else if (res.status === 409) {
+                return Promise.reject({"conflict": "useralreadyincollection"});
+            } else if (res.status === 404) {
+                return Promise.reject({"conflict": "collectiondoesnotexist"});
+            } else if (res.status === 422) {
+                return Promise.reject({"conflict": "collectionnameshort"});
+            }
+            else {
+                return Promise.reject({"conflict": "other"});
             }
         })
         .then(joinSuccess)
         .catch(error => {
-            // error indication
-            console.log(error);
+            var conflict = error.conflict;
+            props.onPostFailure({"title": collectionName, "id": 1}, conflict);
+            if (conflict === 'other') {
+                console.log("tech error; ", error);
+            }
         })
     }
 
@@ -158,14 +190,22 @@ function CollectionUploadForm(props) {
         .then((res) => {
             if (res.ok) {
                 return res.json();
-            } else {
-                return Promise.reject("not uploaded successfully");
+            } else if (res.status === 409) {
+                return Promise.reject({"conflict": "name"});
+            } else if (res.status === 422) {
+                return Promise.reject({"conflict": "collectionnameshort"});
+            }
+            else {
+                return Promise.reject({"conflict": "other"});
             }
         })
         .then(uploadSuccess)
         .catch(error => {
-            props.onPostFailure({"title": collectionName, "id": 1});
-            console.log("tech error; ", error);
+            var conflict = error.conflict;
+            props.onPostFailure({"title": collectionName, "id": 1}, conflict);
+            if (conflict === 'other') {
+                console.log("tech error; ", error);
+            }
         })
     }
 
@@ -180,10 +220,12 @@ function CollectionUploadForm(props) {
 
     const handleJoinCollectionPress = () => {
         cleanForm();
+        setTimeout(()=>{collectionNameInputRef.current.focus()}, 50); // bugs out if i focus immediatly.
         props.setMenuOpen(2);
     }
     const handleCreateCollectionPress = () => {
         cleanForm();
+        setTimeout(()=>{collectionNameInputRef.current.focus()}, 50); // bugs out if i focus immediatly.
         props.setMenuOpen(3);
     }
 
@@ -210,6 +252,7 @@ function CollectionUploadForm(props) {
                 value={collectionName}
                 setValue={setCollectionName}
                 mandatory={`${isHidden(props.trayLevel === 2, 2) === '' ? 'active' : ''}`}
+                inputRef={collectionNameInputRef}
                 required
             />
             <FormInput
@@ -246,6 +289,7 @@ function CollectionUploadForm(props) {
                 addClass={`${isHidden(props.trayLevel !== 3, 1)}`}
             />
             <button 
+                ref={submitButtonRef}
                 type="button"
                 className={`${props.trayLevel === 2 && 'uploadButton __join'} ${props.trayLevel === 3 && 'submitButton __create'}`}
                 onClick={handleSubmit}

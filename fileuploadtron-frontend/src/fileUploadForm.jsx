@@ -3,14 +3,14 @@ import getFileExtension from "./getFileExtension";
 import FormInput from './formInput';
 import ReselectFileButton from "./reselectFileButton";
 
-function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dragContainerUiRef,setMenuActive, collectionId, setUploadProgress, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen, setTrayOpenPreview }) {
+function FileUploadForm({ formId, currentUser,bottomBarRef, filesDragHitboxRef,dragContainerUiRef,setMenuActive, collectionId, setUploadProgress, onPostResponse, onPostFailure, closeTray, trayOpen, setTrayOpen, setTrayOpenPreview }) {
     const [title, setTitle] = useState('');
     const [titlePlaceholder, setTitlePlaceholder] = useState('_'); // has to be not empty before initial set
     const [expiresInDays, setExpiresInDays] = useState(1);
     const [currentFile, setCurrentFile] = useState(null);
-    const [fileSize, setFileSIze] = useState(0);
+    const [fileSize, setFileSize] = useState(0);
     const [isUploadButtonActive, setIsUploadButtonActive] = useState(true);
-    const [isDraggingFile, setIsDraggingFile] = useState(false);
+    const [isDraggingFile, setIsDraggingFile] = useState(0);
     const fileInputRef = useRef();
     const formRef = useRef();
     const submitButtonRef = useRef();
@@ -36,14 +36,14 @@ function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dr
 
     const onFileDrag = (e) => {
         e.preventDefault();
-        if (filesContainerRef.current === e.target || bottomBarRef.current === e.target ||
-            filesContainerRef.current.contains(e.target) || bottomBarRef.current.contains(e.target) ||
+        if (filesDragHitboxRef.current === e.target || bottomBarRef.current === e.target ||
+            filesDragHitboxRef.current.contains(e.target) || bottomBarRef.current.contains(e.target) ||
             e.target.classList.contains('ds')) {
-            setIsDraggingFile(true);
+            setIsDraggingFile(1);
             setMenuActive(true);
             setTrayOpenPreview(-1);
         } else {
-            setIsDraggingFile(false);
+            setIsDraggingFile(0);
             setMenuActive(false);
             setTrayOpenPreview(0);
         }
@@ -51,31 +51,37 @@ function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dr
 
     const onFileDrop = (e) => {
         e.preventDefault();
-        setIsDraggingFile(false);
         const files = e.dataTransfer.files;
         if (files.length > 0) {
+            setIsDraggingFile(2);
             setTimeout(()=>{
-                handleFileUpload(e, files[0]);
+                handleFileUpload(e, files);
             }, 50);
+        } else {
+            setIsDraggingFile(0);
+            setMenuActive(false);
         }
     }
 
     const onMouseLeaveWindow = (e) => {
         if (e.clientX === 0) {
-            setIsDraggingFile(false);
+            setIsDraggingFile(0);
             setMenuActive(false);
             setTrayOpenPreview(0);
         }
     }
 
     useEffect(()=>{
-        if (isDraggingFile === true) {
-            if (dragContainerUiRef.current) {
+        if (dragContainerUiRef.current) {
+            if (isDraggingFile === 1) {
                 dragContainerUiRef.current.classList.add('active');
+            } else if (isDraggingFile === 0) {
+                dragContainerUiRef.current.classList.remove('active');
+                setTrayOpenPreview(0);
+            } else {
+                dragContainerUiRef.current.classList.remove('active');
+                setTrayOpen(2);
             }
-        } else {
-            dragContainerUiRef.current.classList.remove('active');
-            setTrayOpenPreview(0);
         }
     }, [isDraggingFile]);
 
@@ -86,7 +92,7 @@ function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dr
             window.removeEventListener('dragover', onFileDrag);
             window.removeEventListener('drop', onFileDrop);
         }
-    }, [filesContainerRef.current]);
+    }, [filesDragHitboxRef.current]);
 
     useEffect(()=>{
         window.addEventListener('keydown', submitEnterListener);
@@ -107,10 +113,11 @@ function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dr
         fileInputRef.current.value = '';
     }
 
-    const handleFileUpload = (e, other_file=null) => {
+    const handleFileUpload = (e, other_files=null) => {
         var selected_file;
-        if (other_file) {
-            selected_file = other_file;
+        if (other_files) {
+            fileInputRef.current.files = other_files;
+            selected_file = other_files[0];
             setTitle('');
         } else if (e.target.files.length > 0) {
             selected_file = e.target.files[0];
@@ -125,7 +132,7 @@ function FileUploadForm({ formId, currentUser,bottomBarRef, filesContainerRef,dr
         setTimeout(()=>{fileNameInputRef.current.focus()}, 50); // bugs out if i focus immediatly.
         setCurrentFile(selected_file);
         setTitlePlaceholder(selected_file.name);
-        setFileSIze(selected_file.size);
+        setFileSize(selected_file.size);
         setTrayOpen(2);
     }
 

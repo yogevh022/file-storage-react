@@ -46,7 +46,8 @@ def get_all_files(**column):
     return storedFile.objects.filter(**column)
 
 def get_file_collection(**column):
-    return FileCollection.objects.filter(**column).first()
+    return get_object_or_404(FileCollection, **column)
+    # return FileCollection.objects.filter(**column).first()
 
 def get_file_collections(**column):
     return FileCollection.objects.filter(**column)
@@ -271,6 +272,10 @@ def getAllCollections(req, auth_context):
         response = refresh_tokens_if_needed(response, auth_context)
         return response
     elif req.method == 'POST':
+        if (FileCollection.objects.filter(name=req.data['name']).exists()):
+            return Response({'conflict': 'name'}, status=status.HTTP_409_CONFLICT)
+        if (len(req.data['name']) < 1):
+            return Response({'conflict': 'collectionnameshort'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         new_collection = FileCollection.objects.create(name=req.data['name'])
         new_collection.users.add(auth_context.user)
         if collection_password := req.data.get('password', None):
@@ -290,9 +295,11 @@ def getAllCollections(req, auth_context):
         response = refresh_tokens_if_needed(response, auth_context)
         return response
     elif req.method == 'PUT':
+        if (len(req.data['name']) < 1):
+            return Response({'conflict': 'collectionnameshort'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         collection = get_file_collection(name=req.data['name'])
         if collection.users.filter(id=auth_context.user.id).exists():
-            return Response({"status": 1, "message": "user already in collection"})
+            return Response({'conflict': 'exists'}, status=status.HTTP_409_CONFLICT)
         if collection.check_password(req.data['password']):
             collection.users.add(auth_context.user)
             collection.save()

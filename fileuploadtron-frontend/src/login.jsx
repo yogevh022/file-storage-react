@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useFetch from './useFetch';
 import { Navigate } from 'react-router-dom';
 import FormInput from './formInput';
+import InfoIndicator from './infoIndicator';
 
 function Login() {
     const { data: currentUser, isLoading: isLoadingUser } = useFetch("/api/current_user/");
@@ -9,8 +10,13 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [credentialsIncorrect, setCredentialsIncorrect] = useState(false);
+
     const usernameIcon = `${process.env.REACT_APP_STATIC_URL}person.svg`;
     const passwordIcon = `${process.env.REACT_APP_STATIC_URL}lock.svg`;
+    const warningIcon = `${process.env.REACT_APP_STATIC_URL}error_icons/warning_circle.svg`;
+
+    const incorrectCredentialsMessage = 'Incorrect username or password.';
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -27,7 +33,10 @@ function Login() {
         })
         .then((res) => {
             if (res.ok) {
+                setCredentialsIncorrect(false);
                 window.location.href = '/';
+            } else if (res.status === 403) {
+                setCredentialsIncorrect(true);
             }
         })
         .then((resData)=>{console.log(resData)})
@@ -46,6 +55,7 @@ function Login() {
                 { currentUser && <Navigate to="/collections/"/>}
                 <form className='credForm' onSubmit={handleSubmit}>
                     <div className='temp'>FileUploadinator</div>
+                    { credentialsIncorrect && <InfoIndicator icon={warningIcon} text={incorrectCredentialsMessage} addClass='bad' /> }
                     <FormInput
                         icon={usernameIcon}
                         title='USERNAME'

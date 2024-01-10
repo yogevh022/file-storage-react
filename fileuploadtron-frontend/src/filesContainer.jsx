@@ -84,7 +84,7 @@ function FilesContainer(props) {
     }, [props.postDataResponse]);
 
     return (
-    <div ref={props.filesContainerRef} className='filesContainer'>
+    <div className='filesContainer'>
         { isLoading && <LoadingCircle/> }
         { displayData && displayData.length === 0 && <EmptyCollection collectionName={props.collectionData && props.collectionData.name}/> }
         <DragDropFile

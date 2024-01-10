@@ -29,17 +29,19 @@
   --dk35: #dcd4ff;
   --dk4: #E6E6FA;
 
+  
   --lt_d: #ec4c37;
   --lt_e: #de4c86;
   --lt_f: #de4c86;
   --lt_g: #fc9336;
-
+  
   --lt_h:#E678D1;
   --lt_i:#787FF6;
   --lt_j:#8B78E6;
   --lt_k:#7BD5F5;
-
+  
   --lt_red: #d53731;
+  --lt_green: #07da63;
 
 
   --c:#1B1F32
@@ -417,6 +419,8 @@ button {
 }
 
 .popupDynamicContent {
+  color: var(--dk34);
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

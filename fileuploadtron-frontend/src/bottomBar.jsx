@@ -9,23 +9,29 @@ function BottomBar(props) {
         return {
             'upload': ['Uploaded ', dynamicText],
             '!upload': ['Unable to Upload ', dynamicText],
-            'copy': ['Copied ', dynamicText, " to clipboard."],
+            'copy': ['Copied ', dynamicText, " link to clipboard."],
             '!copy': ['Unable to copy to ', 'clipboard.'],
             '!image': ['The chosen file is not an image.'],
             '!password': ['Passwords entered for verification do not match.'],
             '!uploadcollection': ['Unable to create ', dynamicText],
             'uploadcollection': ['', dynamicText, ' has been created'],
+            '!uploadcollectionname': ['Collection ', dynamicText, ' already exists.'],
+            'useralreadyincollection': ['You are already joined to ', dynamicText],
+            'collectiondoesnotexist': ['Collection ', dynamicText, ' does not exist.'],
+            'collectionnameshort': ['Collection name is too short.'],
             'delete': ['', dynamicText, ' has been deleted'],
         }[popupType];
     }
     
     const [trayOpen, setTrayOpen] = useState(0);
     
-    const uploadCompleteIcon = `${process.env.REACT_APP_STATIC_URL}cloud_check.svg`;
-    const copyCompleteIcon = `${process.env.REACT_APP_STATIC_URL}copy.svg`;
-    const warningTriangleIcon = `${process.env.REACT_APP_STATIC_URL}warning_triangle.svg`;
-    const deleteCompleteIcon = `${process.env.REACT_APP_STATIC_URL}trash_check.svg`;
-    const popupLifespanMili = 2000;
+    const uploadCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/cloud_check.svg`;
+    const copyCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/copy.svg`;
+    const warningTriangleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/warning_triangle.svg`;
+    const warningCircleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/warning_circle.svg`;
+    const xCircleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/x_circle.svg`;
+    const deleteCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/trash_check.svg`;
+    const popupLifespanMili = 3000;
     const [popupIcon, setPopupIcon] = useState(uploadCompleteIcon);
     const [popupText, setPopupText] = useState([]);
     const [popupId, setPopupId] = useState(null);
@@ -34,12 +40,18 @@ function BottomBar(props) {
     const [isMenuInitial, setIsMenuInitial] = useState(true);
 
     const popupIcons = {
+        "uploadcollection": uploadCompleteIcon,
         "upload": uploadCompleteIcon,
-        "!upload": warningTriangleIcon,
-        "copy": copyCompleteIcon,
-        "!copy": warningTriangleIcon,
+        'collectionnameshort': xCircleIcon,
+        "!uploadcollectionname": xCircleIcon,
+        "!uploadcollection": xCircleIcon,
+        "!upload": xCircleIcon,
+        "!copy": xCircleIcon,
         '!image': warningTriangleIcon,
         '!password': warningTriangleIcon,
+        'collectiondoesnotexist': warningTriangleIcon,
+        'useralreadyincollection': warningCircleIcon,
+        "copy": copyCompleteIcon,
         'delete': deleteCompleteIcon
     }
     const fileFormId = "fuForm";
@@ -127,8 +139,16 @@ function BottomBar(props) {
         callPopup("!password");
     }
 
-    const onCollectionPostFailure = (fileData) => {
-        callPopup("!uploadcollection", fileData);
+    const collectionUploadConflicts = {
+        'name': '!uploadcollectionname',
+        'useralreadyincollection': 'useralreadyincollection',
+        'collectiondoesnotexist': 'collectiondoesnotexist',
+        'collectionnameshort': 'collectionnameshort',
+        'other': '!uploadcollection',
+    }
+
+    const onCollectionPostFailure = (fileData, conflict=null) => {
+        callPopup(collectionUploadConflicts[conflict], fileData);
     }
 
     const trayLevels = {
@@ -165,7 +185,7 @@ function BottomBar(props) {
                     onPostResponse={onPostResponseReceivedWrapper}
                     onPostFailure={onPostFailure}
                     setUploadProgress={props.setUploadProgress}
-                    filesContainerRef={props.filesContainerRef}
+                    filesDragHitboxRef={props.filesDragHitboxRef}
                     dragContainerUiRef={props.dragContainerUiRef}
                     bottomBarRef={props.bottomBarRef}
                     setMenuActive={props.setMenuActive}

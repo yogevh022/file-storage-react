@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.validators import MinLengthValidator
 import datetime
 
 def current_date():
