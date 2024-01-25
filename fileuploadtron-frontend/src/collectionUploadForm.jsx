@@ -24,8 +24,10 @@ function CollectionUploadForm(props) {
     
     const postCollectionUrl = '/api/collections/';
 
-    const joinCollectionSubmitTitle = 'Join Collection';
-    const createCollectionSubmitTitle = 'Create Collection';
+    const joinCollectionButtonTitle = 'Existing Collection';
+    const createCollectionButtonTitle = 'New Collection';
+    const joinCollectionSubmitTitle = 'Join';
+    const createCollectionSubmitTitle = 'Create';
     const collectionNameTitle = 'Collection Name';
     const collectionPasswordTitle = 'Collection Password';
     const collectionVerifyPasswordTitle = 'Verify Password';
@@ -234,16 +236,18 @@ function CollectionUploadForm(props) {
             <button 
                 type="button"
                 onClick={handleJoinCollectionPress}
-                className={`uploadButton joinCollection ${isHidden(props.trayLevel >= 2, 0)}`}
+                className={`uploadButton joinCollection colGap ${isHidden(props.trayLevel >= 2, 0)}`}
                 >
-                Join Collection
+                <img className="uploadCollectionImg" src={props.joinCollectionIcon}/>
+                {joinCollectionButtonTitle}
             </button>
             <button 
                 type="button"
                 onClick={handleCreateCollectionPress}
-                className={`submitButton createCollection ${isHidden(props.trayLevel >= 2, 0)}`}
+                className={`submitButton createCollection colGap ${isHidden(props.trayLevel >= 2, 0)}`}
                 >
-                Create Collection
+                <img className="uploadCollectionImg" src={props.createCollectionIcon}/>
+                {createCollectionButtonTitle}
             </button>
             <FormInput
                 icon={nameIcon}
@@ -291,11 +295,21 @@ function CollectionUploadForm(props) {
             <button 
                 ref={submitButtonRef}
                 type="button"
-                className={`${props.trayLevel === 2 && 'uploadButton __join'} ${props.trayLevel === 3 && 'submitButton __create'}`}
+                className={`colGap ${props.trayLevel === 2 && 'uploadButton __join'} ${props.trayLevel === 3 && 'submitButton __create'}`}
                 onClick={handleSubmit}
                 >
-                {props.trayLevel === 2 && joinCollectionSubmitTitle}
-                {props.trayLevel === 3 && createCollectionSubmitTitle}
+                {props.trayLevel === 2 &&
+                <>
+                    <img className="uploadCollectionImg" src={props.joinCollectionIcon}/>
+                    {joinCollectionSubmitTitle}
+                </>
+                }
+                {props.trayLevel === 3 &&
+                <>
+                    <img className="uploadCollectionImg" src={props.createCollectionIcon}/>
+                    {createCollectionSubmitTitle}
+                </>
+                }
             </button>
         </form>
     )

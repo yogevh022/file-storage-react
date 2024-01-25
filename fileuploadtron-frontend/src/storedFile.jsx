@@ -6,12 +6,12 @@ const StoredFile = forwardRef(({fileId, user, collectionId, handleDelete, canDel
     const sfcRef = useRef(null);
     const [animClass, setAnimClass] = useState("");
     const [isCopyWindowActive, setIsCopyWindowActive] = useState(false);
-    const [copyLink, setCopyLink] = useState('');
+    const [copyLink, setCopyLink] = useState('_');
 
     const copyClipboardIcon = `${process.env.REACT_APP_STATIC_URL}copy_clipboard.svg`;
-    const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download.svg`;
+    const downloadIcon = `${process.env.REACT_APP_STATIC_URL}download2.svg`;
     const closeIcon = `${process.env.REACT_APP_STATIC_URL}cancel.svg`;
-    const deleteIcon = `${process.env.REACT_APP_STATIC_URL}trash.svg`;
+    const deleteIcon = `${process.env.REACT_APP_STATIC_URL}trash2.svg`;
     
 
     const removeAnimationClassAndListener = () => {

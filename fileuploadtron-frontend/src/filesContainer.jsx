@@ -111,7 +111,7 @@ function FilesContainer(props) {
             />
             
         ))}
-
+        <div className="bottomFade"></div>
         <div className="sfcPadder"></div>
     </div>
     )

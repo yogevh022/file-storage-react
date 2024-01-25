@@ -11,6 +11,7 @@
   --sfsizewidth: 60px;
   --sfbtnwidth: 30px;
 
+  --dsspeed: .3s;
   --dsopacity: 0.85;
 
   --miconwidth: 24px; /* 27px */
@@ -145,6 +146,7 @@
   }
   .reselectFileButton:hover {
     filter: brightness(1);
+    background-color: var(--dk1);
   }
 }
 
@@ -209,7 +211,7 @@ button {
   background-color: var(--dk05);
   opacity: 0;
 
-  transition: opacity .3s;
+  transition: opacity var(--dsspeed);
 
   pointer-events: none;
 
@@ -321,11 +323,19 @@ button {
   height: var(--barheight);
   width: 100%;
 
-  /* the rgb value is --dk1 */
-  background: linear-gradient(to top, rgba(27, 31, 50, 1), rgba(27, 31, 50, 0));
-
   z-index: 2000;
+}
 
+.bottomFade {
+  height: var(--barheight);
+  width: 100%;
+
+    /* the rgb value is --dk1 */
+  background: linear-gradient(to top, rgba(27, 31, 50, 1), rgba(27, 31, 50, 0));
+  z-index: 990; /* .ds is 1000 */
+
+  position: fixed;
+  bottom: 0;
 }
 
 .bottomTray {
@@ -589,6 +599,15 @@ button {
   margin-top: 2px;
 }
 
+.uploadCollectionImg {
+  height: var(--miconwidth);
+  max-width: var(--miconwidth);
+  margin-left: calc(calc(var(--miconwidth) * -1) + 10px); /* 10px = uploadButton gap */
+  pointer-events: none;
+  filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
+  margin-top: 2px;
+}
+
 .submitButton {
   outline: none;
   border: none;
@@ -630,6 +649,10 @@ button {
 
   filter: brightness(1);
   filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
+}
+
+.colGap {
+  gap: 10px;
 }
 
 .fileInput {
@@ -773,8 +796,8 @@ button {
 }
 
 .sfDlBtn {
-  width: calc(var(--sfbtnwidth) - 5px) !important;
-  max-height: calc(var(--sfbtnwidth) - 5px) !important;
+  /* width: calc(var(--sfbtnwidth) - 5px) !important; */
+  /* max-height: calc(var(--sfbtnwidth) - 5px) !important; */
 }
 
 .sfShrBtn {
@@ -979,6 +1002,7 @@ button {
   user-select: none;
 
   border: none;
+  border-radius: var(--uirad);
   color: var(--dk34);
   filter: brightness(0.8);
 }

@@ -26,11 +26,17 @@ function BottomBar(props) {
     const [trayOpen, setTrayOpen] = useState(0);
     
     const uploadCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/cloud_check.svg`;
-    const copyCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/copy.svg`;
+    const copyCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/clipboard_check2.svg`;
     const warningTriangleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/warning_triangle.svg`;
     const warningCircleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/warning_circle.svg`;
     const xCircleIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/x_circle.svg`;
     const deleteCompleteIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/trash_check.svg`;
+    const archiveOkIcon = `${process.env.REACT_APP_STATIC_URL}popup_icons/archive_ok.svg`;
+    
+    const archiveCreateIcon = `${process.env.REACT_APP_STATIC_URL}archive_up.svg`;
+    const archiveJoinIcon = `${process.env.REACT_APP_STATIC_URL}archive_down.svg`;
+
+
     const popupLifespanMili = 3000;
     const [popupIcon, setPopupIcon] = useState(uploadCompleteIcon);
     const [popupText, setPopupText] = useState([]);
@@ -40,7 +46,7 @@ function BottomBar(props) {
     const [isMenuInitial, setIsMenuInitial] = useState(true);
 
     const popupIcons = {
-        "uploadcollection": uploadCompleteIcon,
+        "uploadcollection": archiveOkIcon,
         "upload": uploadCompleteIcon,
         'collectionnameshort': xCircleIcon,
         "!uploadcollectionname": xCircleIcon,
@@ -200,6 +206,8 @@ function BottomBar(props) {
                     onPasswordsDontMatch={onPasswordsDontMatch}
                     onPostResponse={onCollectionPostResponseReceivedWrapper}
                     onPostFailure={onCollectionPostFailure}
+                    joinCollectionIcon={archiveJoinIcon}
+                    createCollectionIcon={archiveCreateIcon}
                 />}
             </div>
         </div>
