@@ -8,7 +8,7 @@ function EmptyCollection(props) {
     return (
         <div className="emptyCollectionContainer">
             <div>It looks like {props.collectionName} is empty!</div>
-            <div className="messageLink" onClick={handleMessageLinkClick}>View black crime statistics</div>
+            <div className="messageLink" onClick={handleMessageLinkClick}>:D</div>
         </div>
     )
 }
